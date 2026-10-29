@@ -268,14 +268,14 @@ td{padding:12px 10px;border-bottom:1px solid var(--line)}
 .wel{max-width:960px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;justify-content:center;gap:20px;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wel-hero{background:var(--brand);color:var(--on-brand);border-radius:44px;padding:clamp(28px,5vw,48px);display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
 .wel-hero::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:#FFFFFF;opacity:.2;top:-140px;right:-90px;pointer-events:none}
-.wel-line{display:flex;align-items:center;gap:clamp(14px,2.5vw,22px);flex-wrap:wrap;position:relative}
-.wel-greet{font-size:clamp(36px,7vw,64px);font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.wel-line{display:flex;align-items:center;gap:clamp(12px,2.5vw,22px);flex-wrap:nowrap;position:relative}
+.wel-greet{min-width:0;font-size:clamp(28px,7.5vw,64px);font-weight:700;letter-spacing:-.5px;line-height:1.1}
 .wel-hero p{font-size:clamp(17px,2.2vw,20px);max-width:560px;position:relative}
-.ball{width:clamp(58px,9vw,78px);height:clamp(58px,9vw,78px);border-radius:50%;background:#FFFFFF;box-shadow:0 10px 24px rgba(138,90,0,.28);overflow:hidden;flex:none;animation:roll 4.2s cubic-bezier(.45,.05,.35,1) .6s infinite}
+.ball{width:clamp(52px,9vw,78px);height:clamp(52px,9vw,78px);border-radius:50%;background:#FFFFFF;box-shadow:0 10px 24px rgba(138,90,0,.28);overflow:hidden;flex:none;animation:roll 4.2s cubic-bezier(.45,.05,.35,1) .6s infinite}
 .ball img{width:100%;height:100%;object-fit:cover;border-radius:50%;mix-blend-mode:multiply;display:block}
 @keyframes roll{
   0%{transform:translateX(0) rotate(0deg)}
-  30%{transform:translateX(-56px) rotate(-360deg)}
+  30%{transform:translateX(-40px) rotate(-360deg)}
   55%{transform:translateX(0) rotate(0deg)}
   62%{transform:translateX(0) rotate(0deg) scale(1.08)}
   68%,100%{transform:translateX(0) rotate(0deg) scale(1)}
