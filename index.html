@@ -311,7 +311,12 @@ const SAVE_ITEMS = [
   ...FUNDS.filter(f=>f.save).map(f=>({key:f.id, kind:'pen', t:'העמלה ב'+f.name+' · '+f.co, d:f.more, v:f.save}))
 ];
 const RETURNED = 18640;
-const NOTIFY_EMAIL = 'bitaxoffice1@gmail.com';
+const LEAD_KEY = 'bd1b074f-ef27-4357-91f7-037856288ba6';
+function sendLead(body){
+  const out = {access_key: LEAD_KEY, from_name: 'Bitax · אזור אישי', subject: body._subject || 'פנייה חדשה מהאזור האישי'};
+  Object.keys(body).forEach(k=>{ if(k[0] !== '_') out[k] = body[k]; });
+  try{ return fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(out)}).catch(()=>{}); }catch(_){}
+}
 
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} } };
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
@@ -344,7 +349,7 @@ function notifyPlan(how,to){
     'קישור לתוכנית': new URL('report.html', location.href).href,
     'מתי': new Date().toLocaleString('he-IL')
   };
-  try{ fetch('https://formsubmit.co/ajax/'+NOTIFY_EMAIL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body)}).catch(()=>{}); }catch(_){}
+  try{ sendLead(body); }catch(_){}
 }
 function notifyOffice(items, note){
   const lines = items.map(x=>`${x.t}: ${fmt(mo(x))} בחודש · ${fmt(yr(x))} בשנה`).join('\n');
@@ -363,7 +368,7 @@ function notifyOffice(items, note){
     'מתי': new Date().toLocaleString('he-IL')
   };
   try{
-    fetch('https://formsubmit.co/ajax/'+NOTIFY_EMAIL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body)}).catch(()=>{});
+    sendLead(body);
   }catch(_){}
 }
 
@@ -624,11 +629,11 @@ document.addEventListener('click',e=>{
 document.addEventListener('click',e=>{
   const w=e.target.closest('[data-act="withdraw"]'); if(!w) return;
   const f=FUNDS.find(x=>x.id===w.dataset.id); S.wd[f.id]={at:new Date().toISOString()}; store.set('bitax_wd',S.wd);
-  try{ fetch('https://formsubmit.co/ajax/'+NOTIFY_EMAIL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({
+  try{ sendLead({
     _subject:`בקשת משיכה: ${CLIENT.name} · ${f.name} ב${f.co}`, _template:'table', _captcha:'false',
     'מה לעשות':'להתקשר ללקוח ולהסביר את המשמעויות (מס, קנס) לפני כל פעולה',
     'שם הלקוח':CLIENT.name+' (לקוח לדוגמה)','תעודת זהות':CLIENT.id,'טלפון':CLIENT.phone,
-    'מוצר':`${f.name} · ${f.co}`,'מעסיק':f.emp,'יתרה':fmt(f.bal),'מתי':new Date().toLocaleString('he-IL')})}).catch(()=>{}); }catch(_){}
+    'מוצר':`${f.name} · ${f.co}`,'מעסיק':f.emp,'יתרה':fmt(f.bal),'מתי':new Date().toLocaleString('he-IL')}); }catch(_){}
   openSheet(S.sheet); toast('קיבלנו את הבקשה. נציג יחזור אליך');
 });
 document.addEventListener('submit',e=>{
