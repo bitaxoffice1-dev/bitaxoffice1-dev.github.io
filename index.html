@@ -388,7 +388,7 @@ let depth=0;
 function go(v){ if(v===S.view) return; depth++; try{ location.hash=v; }catch(_){ show(v); } }
 function show(v){ S.view = valid(v)?v:'home'; S.success=null; render(); window.scrollTo({top:0}); }
 function back(){ if(depth>0){ depth--; history.back(); } else show('home'); }
-window.addEventListener('hashchange',()=>{ closeSheet(); show(location.hash.slice(1)); });
+window.addEventListener('hashchange',()=>{ if(location.hash==='#reset'){ location.reload(); return; } closeSheet(); show(location.hash.slice(1)); });
 
 function shell(inner){
   const sub = isSave(S.view);
