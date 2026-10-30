@@ -208,8 +208,6 @@ button.r:hover{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
 .logo-block .brand .dot{color:var(--ink);font-weight:800;font-size:1.15em;margin-inline-start:1px}
 .logo-block .brand img{height:38px;width:auto;display:block}
 .logo-block small{font-size:11px;color:var(--muted);white-space:nowrap}
-.pf-cta{box-shadow:0 10px 24px rgba(0,0,0,.16);min-height:60px;font-size:17px}
-.plan-foot{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .pf-list li{font-size:15px}
 /* ---------- money split ---------- */
 .split{display:flex;height:10px;border-radius:999px;overflow:hidden;gap:3px;margin-top:14px}
@@ -694,9 +692,12 @@ function newCode(){ S.auth.code = String(Math.floor(100000+Math.random()*900000)
 /* ---------- plan footer (on every page) ---------- */
 const PLAN_FILE = `תוכנית כלכלית - ${CLIENT.name}.pdf`;
 function planFooter(){
-  return `<section class="plan-foot" id="plan-foot">
-    ${S.mailSent ? `<div class="hint ok" style="text-align:center">התוכנית הכלכלית נשלחה למייל <b class="num" style="direction:ltr;display:inline-block">${S.mailSent.to}</b></div>` : ''}
-    <button class="btn btn-dark pf-cta" data-act="open-plan">${icon('gift',20)} ${S.mailSent?'שליחה חוזרת של התוכנית':'לקבלת התוכנית הכלכלית שלך'}</button>
+  return `<section class="rows plan-foot" id="plan-foot">
+    <button class="r" data-act="open-plan">
+      <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
+      <span class="r-main"><b>לקבלת התוכנית הכלכלית שלך</b><small>${S.mailSent?`נשלחה ל-${S.mailSent.to}`:'נשלחת אליך למייל, ללא עלות'}</small></span>
+      <span class="chev">${icon('chev',18)}</span>
+    </button>
   </section>`;
 }
 function planSheetHTML(){
