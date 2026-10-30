@@ -210,6 +210,9 @@ button.r:hover{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
 .logo-block small{font-size:11px;color:var(--muted);white-space:nowrap}
 .pf-list li{font-size:17px;align-items:center}
 .pf-list{gap:12px;margin:4px 0}
+.scrim.center{align-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.scrim.center .sheet{max-width:420px;border-radius:28px;padding:24px;animation:popin .25s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes popin{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
 /* ---------- money split ---------- */
 .split{display:flex;height:10px;border-radius:999px;overflow:hidden;gap:3px;margin-top:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:14px;color:var(--muted)}
@@ -719,7 +722,7 @@ function planSheetHTML(){
 }
 function openPlan(){
   S.sheet='plan'; const root=document.getElementById('sheet-root');
-  root.innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-label="התוכנית הכלכלית שלך"><span class="grab" aria-hidden="true"></span>${planSheetHTML()}</div></div>`;
+  root.innerHTML=`<div class="scrim center" data-close><div class="sheet" role="dialog" aria-modal="true" aria-label="התוכנית הכלכלית שלך">${planSheetHTML()}</div></div>`;
   const f=root.querySelector('#pf-to'); if(f && !f.value) f.focus();
 }
 function leadNote(action, extra){
