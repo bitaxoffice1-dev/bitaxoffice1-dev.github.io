@@ -695,7 +695,7 @@ function planFooter(){
   return `<section class="rows plan-foot" id="plan-foot">
     <button class="r" data-act="open-plan">
       <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
-      <span class="r-main"><b>לקבלת התוכנית הכלכלית שלך</b><small>${S.mailSent?`נשלחה ל-${S.mailSent.to}`:'נשלחת אליך למייל, ללא עלות'}</small></span>
+      <span class="r-main"><b>לקבלת התוכנית הכלכלית שלך</b>${S.mailSent?`<small>נשלחה ל-${S.mailSent.to}</small>`:''}</span>
       <span class="chev">${icon('chev',18)}</span>
     </button>
   </section>`;
@@ -703,7 +703,7 @@ function planFooter(){
 function planSheetHTML(){
   const ses = S.session || {};
   const pre = ses.how==='mail' ? ses.to : (S.mailSent ? S.mailSent.to : '');
-  return `<div class="sheet-head"><div><span class="label">ללא עלות · נשלח אליך למייל</span><h2 style="font-size:24px;margin-top:4px">התוכנית הכלכלית שלך</h2></div><button class="x" data-close aria-label="סגירה">${icon('x',20)}</button></div>
+  return `<div class="sheet-head"><div><h2 style="font-size:24px;margin-top:4px">התוכנית הכלכלית שלך</h2></div><button class="x" data-close aria-label="סגירה">${icon('x',20)}</button></div>
     <p style="font-size:16px;margin:0">כל הפנסיה והביטוחים במקום אחד, עם מה טוב, מה חסר ומה כדאי לעשות.</p>
     <ul class="list pf-list">
       <li>${icon('check',18,2.4)}<span>כל הקופות שלך לפי מעסיק, ומה פעיל היום</span></li>
