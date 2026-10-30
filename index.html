@@ -684,16 +684,19 @@ function newCode(){ S.auth.code = String(Math.floor(100000+Math.random()*900000)
 const PLAN_FILE = `תוכנית כלכלית - ${CLIENT.name}.pdf`;
 function planFooter(){
   const ses = S.session || {};
-  const mailTo = S.mailSent ? S.mailSent.to : '';
+  const pre = S.mailSent ? '' : (ses.how==='mail' ? ses.to : '');
   return `<section class="card plan-foot" id="plan-foot">
     <div class="pf-head"><span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
-      <div><b>התוכנית הכלכלית שלך</b><small>כל הפנסיה והביטוחים במסמך אחד, עם מה טוב, מה חסר ומה כדאי לעשות</small></div></div>
-    <div class="pf-actions">
-      <a class="btn btn-dark" href="${encodeURI('plans/'+PLAN_FILE)}" download="${PLAN_FILE}" data-act="dl">${icon('dl',18)} להורדת התוכנית</a>
-      ${S.mailSent ? `<div class="hint ok" style="text-align:center">התוכנית תישלח אליך למייל <b class="num" style="direction:ltr;display:inline-block">${mailTo}</b></div>`
-        : S.mailOpen ? `<form id="pf-mail" class="pf-mail" novalidate><input class="field" id="pf-to" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" style="direction:ltr;text-align:right" aria-label="כתובת אימייל"><button class="btn btn-line" type="submit">שליחה</button></form><div class="err" id="pf-err" role="alert"></div>`
-        : `<button class="btn btn-line" data-act="mail-plan">${icon('mail',18)} שליחה למייל</button>`}
-    </div></section>`;
+      <div><b>התוכנית הכלכלית שלך</b><small>כל הפנסיה והביטוחים במסמך אחד, עם מה טוב, מה חסר ומה כדאי לעשות. נשלח אליך למייל.</small></div></div>
+    ${S.mailSent
+      ? `<div class="hint ok" style="text-align:center">התוכנית נשלחה למייל <b class="num" style="direction:ltr;display:inline-block">${S.mailSent.to}</b></div>`
+      : `<form class="pf-actions" id="pf-mail" novalidate>
+          <label class="label" for="pf-to">לאיזה מייל לשלוח?</label>
+          <input class="field" id="pf-to" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" value="${pre}" style="direction:ltr;text-align:right">
+          <div class="err" id="pf-err" role="alert"></div>
+          <button class="btn btn-dark" type="submit">${icon('mail',18)} שליחת התוכנית למייל</button>
+        </form>`}
+  </section>`;
 }
 function leadNote(action, extra){
   const ses = S.session || {};
@@ -797,13 +800,6 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="lg-back"]')){ S.auth.step='id'; S.auth.err=''; render(); return; }
   if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'code',to:S.auth.to}).then(()=>toast('שלחנו קוד חדש למייל')).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
   if(e.target.closest('[data-act="logout"]')){ S.session=null; try{localStorage.removeItem('bitax_session')}catch(_){}; S.auth={step:'id',id:'',how:'sms',to:'',err:'',code:''}; render(); window.scrollTo({top:0}); return; }
-  if(e.target.closest('[data-act="dl"]')){ leadNote('הוריד/ה את התוכנית הכלכלית'); toast('התוכנית יורדת למכשיר שלך'); return; }
-  if(e.target.closest('[data-act="mail-plan"]')){
-    const ses=S.session||{};
-    if(ses.how==='mail'){ sendPlanMail(ses.to); }
-    else { S.mailOpen=true; render(); const f=document.getElementById('pf-to'); if(f){ f.scrollIntoView({block:'center'}); f.focus(); } }
-    return;
-  }
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(S.modal==='approve') closeModal(); else if(S.sheet && !S.modal) closeSheet(); }});
 document.addEventListener('change',e=>{
