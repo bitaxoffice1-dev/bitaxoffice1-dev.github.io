@@ -208,7 +208,8 @@ button.r:hover{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
 .logo-block .brand .dot{color:var(--ink);font-weight:800;font-size:1.15em;margin-inline-start:1px}
 .logo-block .brand img{height:38px;width:auto;display:block}
 .logo-block small{font-size:11px;color:var(--muted);white-space:nowrap}
-.pf-list li{font-size:15px}
+.pf-list li{font-size:17px;align-items:center}
+.pf-list{gap:12px;margin:4px 0}
 /* ---------- money split ---------- */
 .split{display:flex;height:10px;border-radius:999px;overflow:hidden;gap:3px;margin-top:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:14px;color:var(--muted)}
@@ -703,19 +704,17 @@ function planFooter(){
 function planSheetHTML(){
   const ses = S.session || {};
   const pre = ses.how==='mail' ? ses.to : (S.mailSent ? S.mailSent.to : '');
-  return `<div class="sheet-head"><div><h2 style="font-size:24px;margin-top:4px">התוכנית הכלכלית שלך</h2></div><button class="x" data-close aria-label="סגירה">${icon('x',20)}</button></div>
-    <p style="font-size:16px;margin:0">כל הפנסיה והביטוחים במקום אחד, עם מה טוב, מה חסר ומה כדאי לעשות.</p>
+  return `<div class="sheet-head"><h2 style="font-size:24px">התוכנית הכלכלית שלך</h2><button class="x" data-close aria-label="סגירה">${icon('x',20)}</button></div>
     <ul class="list pf-list">
-      <li>${icon('check',18,2.4)}<span>כל הקופות שלך לפי מעסיק, ומה פעיל היום</span></li>
-      <li>${icon('check',18,2.4)}<span>כל הביטוחים במבט אחד, וכמה כל אחד עולה</span></li>
-      <li>${icon('check',18,2.4)}<span>מה אפשר לשפר: עד <b class="num">${fmt(annual(SAVE_ITEMS))}</b> חיסכון בשנה</span></li>
+      <li>${icon('check',18,2.4)}<span>מה קיים</span></li>
+      <li>${icon('check',18,2.4)}<span>מה טוב</span></li>
+      <li>${icon('check',18,2.4)}<span>מה כדאי לשפר</span></li>
     </ul>
     <form id="pf-mail" class="pf-actions" novalidate>
       <label class="label" for="pf-to">לאיזה מייל לשלוח?</label>
       <input class="field" id="pf-to" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" value="${pre}" style="direction:ltr;text-align:right">
       <div class="err" id="pf-err" role="alert"></div>
       <button class="btn btn-brand" type="submit">${icon('mail',18)} שלחו לי את התוכנית</button>
-      <p class="foot" style="padding:0;margin:0">קובץ PDF של 3 עמודים · קריאה של 2 דקות</p>
     </form>`;
 }
 function openPlan(){
