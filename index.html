@@ -550,7 +550,7 @@ function saveView(){
       <label><input type="radio" name="how" value="mail" ${S.how==='mail'?'checked':''}>${icon('mail',18)} אימייל</label>
     </div>
     <label for="plan-to" class="label">${S.how==='wa'?'מספר טלפון':'כתובת אימייל'}</label>
-    <input class="field" id="plan-to" ${S.how==='wa'?'type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000"':'type="email" inputmode="email" autocomplete="email" placeholder="name@example.com"'} style="direction:ltr;text-align:right">
+    <input class="field" id="plan-to" ${S.how==='wa'?'type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000"':'type="email" inputmode="email" autocomplete="email" placeholder="אימייל"'} style="direction:ltr;text-align:right">
     <div class="err" id="plan-err" role="alert"></div>
     <button class="btn btn-brand" type="submit">לקבלת התוכנית</button>
     <p class="foot" style="font-size:13px;padding:0">ללא עלות וללא התחייבות.</p>
@@ -685,7 +685,7 @@ function loginView(){
         <label><input type="radio" name="lg-how" value="mail" ${A.how==='mail'?'checked':''}>${icon('mail',18)} אימייל</label>
       </div>
       <label class="label" for="lg-to">${A.how==='sms'?'מספר נייד':'כתובת אימייל'}</label>
-      <input class="field" id="lg-to" ${A.how==='sms'?'type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000"':'type="email" inputmode="email" autocomplete="email" placeholder="name@example.com"'} value="${A.to}" style="direction:ltr;text-align:right">
+      <input class="field" id="lg-to" ${A.how==='sms'?'type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000"':'type="email" inputmode="email" autocomplete="email" placeholder="אימייל"'} value="${A.to}" style="direction:ltr;text-align:right">
       <div class="err" role="alert">${A.err}</div>
       <button class="btn btn-brand" type="submit">שלחו לי קוד</button>
     </form>
@@ -725,7 +725,7 @@ function planSheetHTML(){
       <h2 class="pp-title">התוכנית הכלכלית שלך</h2>
       <ol class="pp-steps">${steps.map((t,i)=>`<li><span class="pp-n num">${i+1}</span><span class="pp-t">${t}</span></li>`).join('')}</ol>
       <form id="pf-mail" class="pf-actions" novalidate>
-        <input class="field" id="pf-to" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" value="${pre}" aria-label="כתובת אימייל" style="direction:ltr;text-align:right">
+        <input class="field" id="pf-to" type="email" inputmode="email" autocomplete="email" placeholder="אימייל" value="${pre}" aria-label="כתובת אימייל" style="direction:ltr;text-align:right">
         <div class="err" id="pf-err" role="alert"></div>
         <button class="btn btn-brand" type="submit">שלחו לי את התוכנית</button>
       </form>
