@@ -624,6 +624,23 @@ function openSheet(key){
 function closeSheet(){S.sheet=null;document.getElementById('sheet-root').innerHTML='';}
 
 
+/* ---------- mail service (Google Apps Script) ---------- */
+const MAIL_API = '';
+const MAIL_TOKEN = 'bitax-portal-2026';
+function api(payload){
+  return fetch(MAIL_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({token:MAIL_TOKEN},payload))}).then(r=>r.json());
+}
+function sendPlanMail(to){
+  S.mailSent={to,at:new Date().toISOString()}; store.set('bitax_mail',S.mailSent); S.mailOpen=false;
+  leadNote('ביקש/ה את התוכנית הכלכלית למייל', {'לשלוח למייל': to, 'נשלח אוטומטית': MAIL_API?'כן':'לא · לשלוח ידנית'});
+  render();
+  if(!MAIL_API){ toast('מעולה! התוכנית בדרך אליך'); return; }
+  toast('שולחים את התוכנית…');
+  api({type:'plan', to, name:CLIENT.name, id:(S.session||{}).id||''})
+    .then(r=>toast(r.ok?'נשלח! התוכנית מחכה לך במייל':'לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'))
+    .catch(()=>toast('לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'));
+}
+
 /* ---------- login ---------- */
 function validId(id){ id=String(id).trim(); if(!/^\d{5,9}$/.test(id)) return false; id=id.padStart(9,'0'); let sum=0; for(let i=0;i<9;i++){ let n=Number(id[i])*((i%2)+1); sum+= n>9?n-9:n; } return sum%10===0; }
 const okPhone = v => /^0?5\d[- ]?\d{3}[- ]?\d{4}$|^\+?972[- ]?5\d[- ]?\d{3}[- ]?\d{4}$/.test(v.trim());
@@ -653,7 +670,7 @@ function loginView(){
       <button type="button" class="link-btn" data-act="lg-back">${icon('arrow',16,2)} שינוי פרטים</button>
       <h1>הזנת קוד</h1>
       <p class="muted">שלחנו קוד בן 6 ספרות ${A.how==='sms'?'בהודעת SMS ל':'במייל ל'}<b class="num" style="color:var(--ink);direction:ltr;display:inline-block">${A.to}</b></p>
-      <div class="hint">גרסת ניסיון: הקוד שלך הוא <b class="num" style="letter-spacing:3px">${A.code}</b></div>
+      ${A.server?'':`<div class="hint">גרסת ניסיון: הקוד שלך הוא <b class="num" style="letter-spacing:3px">${A.code}</b></div>`}
       <label class="label" for="lg-otp">קוד אימות</label>
       <input class="field otp" id="lg-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="------">
       <div class="err" role="alert">${A.err}</div>
@@ -746,36 +763,44 @@ document.addEventListener('submit',e=>{
     if(!validId(A.id)) A.err='מספר תעודת הזהות לא תקין. צריך 9 ספרות, כולל ספרת ביקורת.';
     else if(A.how==='sms' && !okPhone(A.to)) A.err='מספר הנייד לא נראה תקין. למשל: 050-1234567.';
     else if(A.how==='mail' && !okMail(A.to)) A.err='כתובת האימייל לא נראית תקינה.';
-    else { A.err=''; A.step='code'; newCode(); }
+    else if(A.how==='mail' && MAIL_API){
+      A.err=''; const btn=e.target.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='שולחים…';
+      api({type:'code', to:A.to}).then(r=>{ if(r.ok){ A.server=true; A.step='code'; } else A.err='לא הצלחנו לשלוח קוד. אפשר לנסות שוב.'; render(); const f=document.getElementById('lg-otp'); if(f) f.focus(); })
+        .catch(()=>{ A.err='לא הצלחנו לשלוח קוד. אפשר לנסות שוב.'; render(); });
+      return;
+    }
+    else { A.err=''; A.server=false; A.step='code'; newCode(); }
     render(); const f=document.getElementById(A.step==='code'?'lg-otp':'lg-id'); if(f) f.focus(); return;
   }
   if(e.target.id==='lg-code'){
     e.preventDefault();
     const v=document.getElementById('lg-otp').value.trim();
-    if(v!==A.code){ A.err = v.length<6 ? 'הקוד צריך להכיל 6 ספרות.' : 'הקוד שגוי. אפשר לנסות שוב או לבקש קוד חדש.'; render(); return; }
-    S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString()}; store.set('bitax_session',S.session);
+    if(v.length<6){ A.err='הקוד צריך להכיל 6 ספרות.'; render(); return; }
+    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString()}; store.set('bitax_session',S.session);
     A.err=''; A.step='id'; S.view='home'; S.rolled=false;
     try{ history.replaceState(null,'','#home'); }catch(_){}
-    render(); window.scrollTo({top:0}); if(!S.mkt) consentModal(); return;
+    render(); window.scrollTo({top:0}); if(!S.mkt) consentModal(); };
+    if(A.server){ api({type:'verify', to:A.to, code:v}).then(r=>{ if(r.ok) enter(); else { A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
+    if(v!==A.code){ A.err='הקוד שגוי. אפשר לנסות שוב או לבקש קוד חדש.'; render(); return; }
+    enter(); return;
   }
   if(e.target.id==='pf-mail'){
     e.preventDefault();
     const v=document.getElementById('pf-to').value.trim();
     if(!okMail(v)){ document.getElementById('pf-err').textContent='כתובת האימייל לא נראית תקינה.'; return; }
-    S.mailSent={to:v,at:new Date().toISOString()}; store.set('bitax_mail',S.mailSent); S.mailOpen=false;
-    leadNote('ביקש/ה את התוכנית הכלכלית למייל', {'לשלוח למייל': v}); render(); toast('מעולה! התוכנית בדרך אליך');
+    sendPlanMail(v);
   }
 });
 document.addEventListener('change',e=>{ if(e.target.name==='lg-how'){ S.auth.how=e.target.value; S.auth.to=''; S.auth.err=''; render(); const f=document.getElementById('lg-to'); if(f) f.focus(); } });
 document.addEventListener('input',e=>{ if(e.target.id==='lg-otp'||e.target.id==='lg-id') e.target.value=e.target.value.replace(/\D/g,''); });
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="lg-back"]')){ S.auth.step='id'; S.auth.err=''; render(); return; }
-  if(e.target.closest('[data-act="lg-resend"]')){ newCode(); S.auth.err=''; render(); toast('שלחנו קוד חדש'); return; }
+  if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'code',to:S.auth.to}).then(()=>toast('שלחנו קוד חדש למייל')).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
   if(e.target.closest('[data-act="logout"]')){ S.session=null; try{localStorage.removeItem('bitax_session')}catch(_){}; S.auth={step:'id',id:'',how:'sms',to:'',err:'',code:''}; render(); window.scrollTo({top:0}); return; }
   if(e.target.closest('[data-act="dl"]')){ leadNote('הוריד/ה את התוכנית הכלכלית'); toast('התוכנית יורדת למכשיר שלך'); return; }
   if(e.target.closest('[data-act="mail-plan"]')){
     const ses=S.session||{};
-    if(ses.how==='mail'){ S.mailSent={to:ses.to,at:new Date().toISOString()}; store.set('bitax_mail',S.mailSent); leadNote('ביקש/ה את התוכנית הכלכלית למייל', {'לשלוח למייל': ses.to}); render(); toast('מעולה! התוכנית בדרך אליך'); }
+    if(ses.how==='mail'){ sendPlanMail(ses.to); }
     else { S.mailOpen=true; render(); const f=document.getElementById('pf-to'); if(f){ f.scrollIntoView({block:'center'}); f.focus(); } }
     return;
   }
