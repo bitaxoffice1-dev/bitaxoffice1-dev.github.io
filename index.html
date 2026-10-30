@@ -318,6 +318,12 @@ function sendLead(body){
   try{ return fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(out)}).catch(()=>{}); }catch(_){}
 }
 
+/* demo reset: open the site with #reset to start over; bump DATA_VER to reset everyone */
+(function(){ const DATA_VER = 2; try{
+  const wipe = () => Object.keys(localStorage).filter(k=>k.startsWith('bitax_')).forEach(k=>localStorage.removeItem(k));
+  if(location.hash==='#reset'){ wipe(); history.replaceState(null,'',location.pathname+'#home'); }
+  if(localStorage.getItem('bitax_ver') !== String(DATA_VER)){ wipe(); localStorage.setItem('bitax_ver', String(DATA_VER)); }
+}catch(_){} })();
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} } };
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
 const S = {view:'home', done: store.get('bitax_done') || {}, f106:false, sheet:null, success:null, rolled:false, mkt: store.get('bitax_mkt'), plan: store.get('bitax_plan'), wd: store.get('bitax_wd')||{}, how:'wa'};
