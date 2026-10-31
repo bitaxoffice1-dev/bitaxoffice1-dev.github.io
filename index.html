@@ -225,6 +225,8 @@ button.r:hover{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
 .pp-t{font-size:14px}
 .pp-body .pf-actions{gap:10px}
 .pp-body .err:empty{display:none}
+.btn-wa{background:var(--wa-bg);color:var(--wa-fg);border:1px solid var(--wa-line);text-decoration:none}
+.pp-text{margin:0;color:var(--muted);font-size:16px;line-height:1.55}
 /* ---------- money split ---------- */
 .split{display:flex;height:10px;border-radius:999px;overflow:hidden;gap:3px;margin-top:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:14px;color:var(--muted)}
@@ -662,7 +664,7 @@ function sendPlanMail(to){
   if(!MAIL_API){ toast('מעולה! התוכנית בדרך אליך'); return; }
   toast('שולחים את התוכנית…');
   api({type:'plan', to, name:CLIENT.name, id:(S.session||{}).id||''})
-    .then(r=>toast(r.ok?'נשלח! התוכנית מחכה לך במייל':'לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'))
+    .then(r=>{ if(r && r.err==='limit'){ openPlanLimit(); return; } toast(r.ok?'נשלח! התוכנית מחכה לך במייל':'לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'); })
     .catch(()=>toast('לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'));
 }
 
@@ -735,6 +737,19 @@ function openPlan(){
   S.sheet='plan'; const root=document.getElementById('sheet-root');
   root.innerHTML=`<div class="scrim center" data-close><div class="sheet pp" role="dialog" aria-modal="true" aria-label="התוכנית הכלכלית שלך">${planSheetHTML()}</div></div>`;
   const f=root.querySelector('#pf-to'); if(f && !f.value) f.focus();
+}
+/* more than 2 plans this month: friendly popup with WhatsApp instead */
+function openPlanLimit(){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  S.sheet='plan-limit'; const root=document.getElementById('sheet-root');
+  root.innerHTML=`<div class="scrim center" data-close><div class="sheet pp" role="dialog" aria-modal="true" aria-label="כבר קיבלת את התוכנית">
+    <div class="pp-body">
+      <button class="x pp-x" data-close aria-label="סגירה">${icon('x',18)}</button>
+      <h2 class="pp-title" style="white-space:normal">כבר קיבלת את התוכנית החודש</h2>
+      <p class="pp-text">שלחנו לך את התוכנית הכלכלית למייל. נשמח לעזור בכל שאלה בוואטסאפ.</p>
+      <div class="pf-actions"><a class="btn btn-wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20)} לוואטסאפ</a></div>
+    </div></div></div>`;
+  const w=root.querySelector('.btn-wa'); if(w) w.focus();
 }
 function leadNote(action, extra){
   const ses = S.session || {};
