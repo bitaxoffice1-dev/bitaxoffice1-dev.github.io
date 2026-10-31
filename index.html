@@ -650,7 +650,7 @@ function closeSheet(){S.sheet=null;document.getElementById('sheet-root').innerHT
 
 
 /* ---------- mail service (Google Apps Script) ---------- */
-const MAIL_API = '';
+const MAIL_API = 'https://script.google.com/macros/s/AKfycbxppJFcoYdqKWHsrxL2sO5tExkKzSo0epysPjgqqF34_m_CmPNjxFK61FoHH1DAPUV9Mw/exec';
 const MAIL_TOKEN = 'bitax-portal-2026';
 function api(payload){
   return fetch(MAIL_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({token:MAIL_TOKEN},payload))}).then(r=>r.json());
