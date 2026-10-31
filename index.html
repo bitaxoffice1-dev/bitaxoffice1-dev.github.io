@@ -895,7 +895,7 @@ document.addEventListener('submit',e=>{
     closeSheet(); sendPlanMail(v);
   }
 });
-document.addEventListener('change',e=>{ if(e.target.name==='lg-how'){ S.auth.how=e.target.value; S.auth.to=''; S.auth.err=''; render(); const f=document.getElementById('lg-to'); if(f) f.focus(); } });
+document.addEventListener('change',e=>{ if(e.target.name==='lg-how'){ const idEl=document.getElementById('lg-id'); if(idEl) S.auth.id=idEl.value.replace(/\D/g,''); S.auth.how=e.target.value; S.auth.to=''; S.auth.err=''; render(); const id=document.getElementById('lg-id'), f=document.getElementById('lg-to'); const t=(id && !id.value.trim()) ? id : f; if(t) t.focus(); } });
 document.addEventListener('input',e=>{ if(e.target.id==='lg-otp'||e.target.id==='lg-id') e.target.value=e.target.value.replace(/\D/g,''); });
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="lg-back"]')){ S.auth.step='id'; S.auth.err=''; render(); return; }
