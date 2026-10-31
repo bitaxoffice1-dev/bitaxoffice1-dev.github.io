@@ -18,6 +18,17 @@
 @keyframes wtpeek{0%,8%{transform:translateY(96px)}22%,78%{transform:translateY(0)}92%,100%{transform:translateY(96px)}}
 @keyframes wteye{0%,30%{transform:translateX(0)}40%,50%{transform:translateX(-5px)}58%,68%{transform:translateX(6px)}76%,100%{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.wt .pk,.wt .eyes{animation:none}}
+
+/* docs-pending stage */
+.dk-list{list-style:none;margin:14px 0 18px;padding:0;display:flex;flex-direction:column;gap:10px}
+.dk-list li{display:flex;align-items:center;gap:12px;font-size:16px}
+.dk-list .dk-i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;border:2px solid var(--line);color:#5B5870}
+.dk-list li.ok .dk-i{background:#FDF3C9;border-color:#F8D754;color:#14121F}
+.dk-list li.ok span:last-child{color:#5B5870;text-decoration:line-through}
+.dk-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#14121F;color:#fff;border:0;border-radius:999px;padding:16px 20px;font:600 17px Heebo,Arial,sans-serif;text-decoration:none;cursor:pointer}
+.dk-steps{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.dk-steps div{display:flex;gap:12px;align-items:flex-start}
+.dk-steps b.n{width:26px;height:26px;border-radius:50%;background:#FDF3C9;display:grid;place-items:center;font-size:13px;flex:none}
 </style>
 <title>Bitax אזור אישי</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -471,7 +482,9 @@ function sendLead(body){
 }catch(_){} })();
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} } };
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
+if(/[?&]demo=docs\b/.test(location.search)){ CLIENT.docs={idf:true}; }
 const S = {session: store.get('bitax_session'), auth:{step:'id', id:'', how:'sms', to:'', err:'', code:''}, mailSent: store.get('bitax_mail'), mailOpen:false, view:'home', done: store.get('bitax_done') || {}, f106:false, sheet:null, success:null, rolled:false, mkt: store.get('bitax_mkt'), plan: store.get('bitax_plan'), wd: store.get('bitax_wd')||{}, how:'wa'};
+if(/[?&]demo=docs\b/.test(location.search)) S.stage='docs';
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
 const doneItems = () => SAVE_ITEMS.filter(x=>S.done[x.key]);
@@ -820,6 +833,7 @@ function newCode(){ S.auth.code = String(Math.floor(100000+Math.random()*900000)
 /* ---------- plan footer (on every page) ---------- */
 const PLAN_FILE = `תוכנית כלכלית - ${CLIENT.name}.pdf`;
 function planFooter(){
+  if(S.stage==='docs') return '';
   return `<section class="rows plan-foot" id="plan-foot">
     <button class="r" data-act="open-plan">
       <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
@@ -877,15 +891,41 @@ function leadNote(action, extra){
   }, extra||{}));
 }
 
+
+const DOC_KIT=[['idf','תעודת זהות – צד קדמי'],['idb','תעודת זהות – צד אחורי'],['bank','צ׳ק מבוטל או אישור ניהול חשבון']];
+function docsView(){
+  const hello = home().split('</section>')[0]+'</section>';
+  const got = CLIENT.docs||{};
+  const left = DOC_KIT.filter(d=>!got[d[0]]).length;
+  return hello+`
+  <section class="card">
+    <span class="label">עוד צעד אחד</span>
+    <h2 style="font-family:Rubik,Heebo,sans-serif;font-weight:800;font-size:24px;margin:6px 0 6px">חסרים לנו ${left===1?'מסמך אחד':left+' מסמכים'}</h2>
+    <p class="muted" style="margin:0">ברגע שהם אצלנו, נביא לכאן את כל הביטוחים והחיסכון שלך מהמסלקה ומהר הביטוח.</p>
+    <ul class="dk-list">${DOC_KIT.map(d=>`<li class="${got[d[0]]?'ok':''}"><span class="dk-i">${got[d[0]]?icon('check',16,2.6):''}</span><span>${d[1]}</span></li>`).join('')}</ul>
+    <a class="dk-btn" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>
+    <p class="muted" style="margin:10px 0 0;font-size:14px;text-align:center">צילום ברור מהטלפון מספיק</p>
+  </section>
+  <section class="card">
+    <span class="label">מה קורה אחרי</span>
+    <div class="dk-steps" style="margin-top:12px">
+      <div><b class="n">1</b><span>אנחנו בודקים שהמסמכים תקינים</span></div>
+      <div><b class="n">2</b><span>שולחים בקשה למסלקה ולהר הביטוח</span></div>
+      <div><b class="n">3</b><span>תוך עד 48 שעות הנתונים שלך מופיעים כאן</span></div>
+    </div>
+  </section>
+  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+}
 /* ---------- render + events ---------- */
 function render(){
   if(!S.session){ document.getElementById('app').innerHTML = loginView(); return; }
   const firstHome = !S.rolled && S.view==='home';
-  const v = isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
+  const v = (S.stage==='docs' && S.view!=='journey') ? docsView : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
   document.getElementById('app').innerHTML = shell(v());
   if(firstHome) S.rolled = true;
 }
 document.addEventListener('click',e=>{
+  if(e.target.closest('[data-act="dk-demo"]')){ e.preventDefault(); toast('בדוגמה: כאן ייפתח טופס ההעלאה האישי של הלקוח'); return; }
   const g=e.target.closest('[data-go]'); if(g){closeSheet();go(g.dataset.go);return;}
   const sv=e.target.closest('[data-save]'); if(sv){closeSheet(); openPlan(); return;}
   const sh=e.target.closest('[data-sheet]'); if(sh){openSheet(sh.dataset.sheet);return;}
