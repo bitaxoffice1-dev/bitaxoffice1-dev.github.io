@@ -22,9 +22,11 @@
 /* docs-pending stage */
 .dk-list{list-style:none;margin:14px 0 18px;padding:0;display:flex;flex-direction:column;gap:10px}
 .dk-list li{display:flex;align-items:center;gap:12px;font-size:16px}
-.dk-list .dk-i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;border:2px solid var(--line);color:#5B5870}
-.dk-list li.ok .dk-i{background:#FDF3C9;border-color:#F8D754;color:#14121F}
-.dk-list li.ok span:last-child{color:#5B5870;text-decoration:line-through}
+.dk-list .dk-i{width:10px;height:10px;border-radius:50%;background:#F8D754;border:0!important;display:grid;place-items:center;flex:none;border:2px solid var(--line);color:#5B5870}
+.dk-h{font-family:Rubik,Heebo,sans-serif;font-weight:800;font-size:24px;margin:6px 0 6px}
+.dk-steps div.done b.n{background:#F8D754}
+.dk-steps div.now b.n{background:#14121F;color:#fff}
+.dk-steps div:not(.done):not(.now){opacity:.55}
 .dk-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#14121F;color:#fff;border:0;border-radius:999px;padding:16px 20px;font:600 17px Heebo,Arial,sans-serif;text-decoration:none;cursor:pointer}
 .dk-steps{display:flex;flex-direction:column;gap:14px;margin-top:4px}
 .dk-steps div{display:flex;gap:12px;align-items:flex-start}
@@ -482,9 +484,8 @@ function sendLead(body){
 }catch(_){} })();
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} } };
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
-if(/[?&]demo=docs\b/.test(location.search)){ CLIENT.docs={idf:true}; }
 const S = {session: store.get('bitax_session'), auth:{step:'id', id:'', how:'sms', to:'', err:'', code:''}, mailSent: store.get('bitax_mail'), mailOpen:false, view:'home', done: store.get('bitax_done') || {}, f106:false, sheet:null, success:null, rolled:false, mkt: store.get('bitax_mkt'), plan: store.get('bitax_plan'), wd: store.get('bitax_wd')||{}, how:'wa'};
-if(/[?&]demo=docs\b/.test(location.search)) S.stage='docs';
+{ const m=location.search.match(/[?&]demo=(docs|review|sent)\b/); if(m) S.stage=m[1]; }
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
 const doneItems = () => SAVE_ITEMS.filter(x=>S.done[x.key]);
@@ -833,7 +834,7 @@ function newCode(){ S.auth.code = String(Math.floor(100000+Math.random()*900000)
 /* ---------- plan footer (on every page) ---------- */
 const PLAN_FILE = `תוכנית כלכלית - ${CLIENT.name}.pdf`;
 function planFooter(){
-  if(S.stage==='docs') return '';
+  if(S.stage) return '';
   return `<section class="rows plan-foot" id="plan-foot">
     <button class="r" data-act="open-plan">
       <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
@@ -892,35 +893,39 @@ function leadNote(action, extra){
 }
 
 
-const DOC_KIT=[['idf','תעודת זהות – צד קדמי'],['idb','תעודת זהות – צד אחורי'],['bank','צ׳ק מבוטל או אישור ניהול חשבון']];
+const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','צ׳ק מבוטל או אישור ניהול חשבון'];
+const STAGE_STEP={docs:0,review:1,sent:2};
+function stageSteps(){
+  const cur=STAGE_STEP[S.stage]||0;
+  const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקה שלנו','מוודאים שהמסמכים תקינים'],['בקשה למסלקה ולהר הביטוח','הנתונים מגיעים תוך עד 48 שעות']];
+  return `<div class="dk-steps" style="margin-top:12px">${st.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
+}
 function docsView(){
   const hello = home().split('</section>')[0]+'</section>';
-  const got = CLIENT.docs||{};
-  const left = DOC_KIT.filter(d=>!got[d[0]]).length;
-  return hello+`
-  <section class="card">
+  let main;
+  if(S.stage==='docs') main=`
     <span class="label">עוד צעד אחד</span>
-    <h2 style="font-family:Rubik,Heebo,sans-serif;font-weight:800;font-size:24px;margin:6px 0 6px">חסרים לנו ${left===1?'מסמך אחד':left+' מסמכים'}</h2>
+    <h2 class="dk-h">חסרים לנו המסמכים שלך</h2>
     <p class="muted" style="margin:0">ברגע שהם אצלנו, נביא לכאן את כל הביטוחים והחיסכון שלך מהמסלקה ומהר הביטוח.</p>
-    <ul class="dk-list">${DOC_KIT.map(d=>`<li class="${got[d[0]]?'ok':''}"><span class="dk-i">${got[d[0]]?icon('check',16,2.6):''}</span><span>${d[1]}</span></li>`).join('')}</ul>
-    <a class="dk-btn" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>
-    <p class="muted" style="margin:10px 0 0;font-size:14px;text-align:center">צילום ברור מהטלפון מספיק</p>
-  </section>
-  <section class="card">
-    <span class="label">מה קורה אחרי</span>
-    <div class="dk-steps" style="margin-top:12px">
-      <div><b class="n">1</b><span>אנחנו בודקים שהמסמכים תקינים</span></div>
-      <div><b class="n">2</b><span>שולחים בקשה למסלקה ולהר הביטוח</span></div>
-      <div><b class="n">3</b><span>תוך עד 48 שעות הנתונים שלך מופיעים כאן</span></div>
-    </div>
-  </section>
+    <ul class="dk-list">${DOC_KIT.map(d=>`<li><span class="dk-i"></span><span>${d}</span></li>`).join('')}</ul>
+    <a class="dk-btn" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>`;
+  else if(S.stage==='review') main=`
+    <span class="label">קיבלנו</span>
+    <h2 class="dk-h">המסמכים אצלנו</h2>
+    <p class="muted" style="margin:0">אנחנו בודקים שהכול תקין. אם משהו יחסר, נחזור אליך.</p>`;
+  else main=`
+    <span class="label">בדרך</span>
+    <h2 class="dk-h">הבקשה נשלחה</h2>
+    <p class="muted" style="margin:0">ביקשנו את הנתונים שלך מהמסלקה ומהר הביטוח. הם יופיעו כאן תוך עד 48 שעות.</p>`;
+  return hello+`<section class="card">${main}</section>
+  <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 /* ---------- render + events ---------- */
 function render(){
   if(!S.session){ document.getElementById('app').innerHTML = loginView(); return; }
   const firstHome = !S.rolled && S.view==='home';
-  const v = (S.stage==='docs' && S.view!=='journey') ? docsView : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
+  const v = (S.stage && S.view!=='journey') ? docsView : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
   document.getElementById('app').innerHTML = shell(v());
   if(firstHome) S.rolled = true;
 }
