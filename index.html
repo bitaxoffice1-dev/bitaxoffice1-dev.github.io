@@ -4,7 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF6DE">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* stork peek loader */
+.wt{position:fixed;inset:0;z-index:9999;background:#FAFAFC;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;transition:opacity .25s;pointer-events:none}
+.wt.on{opacity:1;pointer-events:auto}
+.wt svg{width:110px;height:110px;overflow:visible}
+.wt p{margin:0;font-size:15px;color:#5B5870;font-family:Heebo,Arial,sans-serif}
+.wt .o{stroke:#14121F;stroke-width:9;fill:#fff}
+.wt .bk{stroke:#14121F;stroke-width:7;fill:#fff;stroke-linejoin:round}
+.wt .nk{stroke:#14121F;stroke-width:9;fill:none;stroke-linecap:round}
+.wt .pk{animation:wtpeek 4.4s cubic-bezier(.5,0,.3,1) infinite}
+.wt .eyes{animation:wteye 4.4s ease-in-out infinite}
+@keyframes wtpeek{0%,8%{transform:translateY(96px)}22%,78%{transform:translateY(0)}92%,100%{transform:translateY(96px)}}
+@keyframes wteye{0%,30%{transform:translateX(0)}40%,50%{transform:translateX(-5px)}58%,68%{transform:translateX(6px)}76%,100%{transform:translateX(0)}}
+@media (prefers-reduced-motion:reduce){.wt .pk,.wt .eyes{animation:none}}
+</style>
 <title>Bitax אזור אישי</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -738,6 +752,12 @@ function closeSheet(){S.sheet=null;document.getElementById('sheet-root').innerHT
 /* ---------- mail service (Google Apps Script) ---------- */
 const MAIL_API = 'https://script.google.com/macros/s/AKfycbxppJFcoYdqKWHsrxL2sO5tExkKzSo0epysPjgqqF34_m_CmPNjxFK61FoHH1DAPUV9Mw/exec';
 const MAIL_TOKEN = 'bitax-portal-2026';
+
+function waitOn(t){ let w=document.getElementById('wt'); if(!w){ w=document.createElement('div'); w.id='wt'; w.className='wt'; w.setAttribute('role','status');
+  w.innerHTML='<svg viewBox="0 0 160 160" aria-hidden="true"><defs><clipPath id="wtcp"><rect x="-40" y="-40" width="240" height="195"/></clipPath></defs><g clip-path="url(#wtcp)"><g class="pk"><path class="nk" d="M112,100 C116,118 120,130 122,150 L123,200"/><path class="bk" d="M66,70 L12,98 L70,88 Z"/><circle class="o" cx="92" cy="76" r="30"/><g class="eyes"><circle cx="84" cy="70" r="7" fill="#14121F"/><circle cx="86.5" cy="67.5" r="2.2" fill="#fff"/></g></g></g><path d="M-6,158 A86,46 0 0 1 166,158 Z" fill="#F8D754"/></svg><p></p>';
+  document.body.appendChild(w); }
+  w.querySelector('p').textContent=t||'מכינים את הנתונים בשבילך'; waitOn.at=Date.now(); requestAnimationFrame(()=>w.classList.add('on')); }
+function waitOff(min){ const w=document.getElementById('wt'); if(!w) return; const left=Math.max(0,(min||0)-(Date.now()-(waitOn.at||0))); setTimeout(()=>w.classList.remove('on'),left); }
 function api(payload){
   return fetch(MAIL_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({token:MAIL_TOKEN},payload))}).then(r=>r.json());
 }
@@ -926,9 +946,9 @@ document.addEventListener('submit',e=>{
     A.err=''; A.step='id'; S.view='home'; S.rolled=false;
     try{ history.replaceState(null,'','#home'); }catch(_){}
     render(); window.scrollTo({top:0}); if(!S.mkt) consentModal(); };
-    if(A.server){ api({type:'verify', to:A.to, code:v}).then(r=>{ if(r.ok) enter(); else { A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
+    if(A.server){ waitOn(); api({type:'verify', to:A.to, code:v}).then(r=>{ if(r.ok){ enter(); waitOff(2400); } else { waitOff(); A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ waitOff(); A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
     if(v!==A.code){ A.err='הקוד שגוי. אפשר לנסות שוב או לבקש קוד חדש.'; render(); return; }
-    enter(); return;
+    waitOn(); enter(); waitOff(2400); return;
   }
   if(e.target.id==='pf-mail'){
     e.preventDefault();
