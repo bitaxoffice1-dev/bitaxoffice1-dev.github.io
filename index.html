@@ -898,7 +898,8 @@ const STAGE_STEP={docs:0,review:1,sent:2};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקה שלנו','מוודאים שהמסמכים תקינים'],['בקשה למסלקה ולהר הביטוח','הנתונים מגיעים תוך עד 48 שעות']];
-  return `<div class="dk-steps" style="margin-top:12px">${st.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
+  const show = S.stage==='docs' ? st.slice(0,2) : st;
+  return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
 function docsView(){
   const hello = home().split('</section>')[0]+'</section>';
