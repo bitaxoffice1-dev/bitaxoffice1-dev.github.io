@@ -6,9 +6,10 @@
 <title>Bitax – הכסף שלך. סוף סוף בסדר.</title>
 <meta name="description" content="פלטפורמה פיננסית חכמה שמאתרת החזרי מס, ביטוחים כפולים, פנסיות נשכחות וכספים אבודים – הכל באזור אישי אחד.">
 <meta name="theme-color" content="#F8D754">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&amp;family=Heebo:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&amp;family=Heebo:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+
 <style>
 body{margin:0;background:#FAFAFC}
 a{color:#8A6D00}a:hover{color:#7A5F00}
@@ -28,29 +29,22 @@ input::placeholder{color:#8C89A0}
 @media (prefers-reduced-motion:reduce){.bx-track,.bx-live{animation:none}}
 </style>
 
-<style>html{scroll-behavior:smooth}</style>
 </head>
 <body>
 
 
 <div dir="rtl" style="width: 100%; background: #FAFAFC; color: #14121F; font-family: 'Heebo', system-ui, sans-serif; overflow-x: hidden">
 
-<!-- NAV -->
-<header style="position: sticky; top: 0; z-index: 20; background: rgba(250,250,252,.85); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(20,18,31,.07)">
-<nav style="max-width: 1240px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px">
-<a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #14121F">
-<span style="width: 34px; height: 34px; border-radius: 10px; background: #F8D754; display: grid; place-items: center; color: #14121F; font-family: 'Rubik', sans-serif; font-weight: 900; font-size: 20px; position: relative">b<span style="position: absolute; top: -3px; left: -3px; width: 10px; height: 10px; border-radius: 50%; background: #14121F; border: 2px solid #FAFAFC"></span></span>
-<span style="font-family: 'Rubik', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.5px" dir="ltr">bitax</span>
-</a>
-<div class="bx-nav-links" style="display: flex; align-items: center; gap: 32px; font-size: 15px">
-<a href="#services" style="color: #4A475C; text-decoration: none">שירותים</a>
-<a href="#how" style="color: #4A475C; text-decoration: none">איך זה עובד</a>
-<a href="#app" style="color: #4A475C; text-decoration: none">האזור האישי</a>
-<a href="#faq" style="color: #4A475C; text-decoration: none">שאלות</a>
-</div>
-<div style="display: flex; align-items: center; gap: 10px">
-<a href="https://finance.bitax.co.il/" class="bx-hide-sm" style="color: #14121F; text-decoration: none; font-size: 15px; font-weight: 500; padding: 11px 18px; border-radius: 999px; border: 1px solid rgba(20,18,31,.14); min-height: 44px; display: inline-flex; align-items: center">כניסה לאזור האישי</a>
-<a href="#join" style="background: #F8D754; color: #14121F; text-decoration: none; font-size: 15px; font-weight: 600; padding: 11px 20px; border-radius: 999px; min-height: 44px; display: inline-flex; align-items: center">הצטרפות</a>
+<header class="bx-header">
+<nav class="bx-nav" aria-label="ניווט ראשי">
+<a href="index.html" class="bx-logo" aria-label="Bitax – דף הבית"><span class="bx-logo-mark">b</span><span class="bx-logo-word" dir="ltr">bitax</span></a>
+<div class="bx-links"><a href="index.html#services">שירותים</a><a href="index.html#how">איך זה עובד</a><a href="about.html">מי אנחנו</a><a href="blog.html">בלוג</a><a href="contact.html">יצירת קשר</a></div>
+<div class="bx-actions">
+<a href="https://finance.bitax.co.il/" class="btn btn-ghost bx-hide-sm">כניסה לאזור האישי</a>
+<a href="index.html#join" class="btn btn-sun" style="box-shadow:none">הצטרפות</a>
+<details class="bx-menu"><summary aria-label="תפריט"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14121F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></summary>
+<div class="bx-menu-panel"><a href="tax-refunds.html">החזרי מס</a><a href="mirroring-the-insurance-portfolio.html">שיקוף תיק הביטוח</a><a href="pension-portfolio-review.html">שיקוף תיק הפנסיה</a><a href="finding-funds.html">איתור כספים</a><a href="mortgages.html">משכנתאות</a><a href="checking-the-payslip.html">בדיקת תלוש השכר</a><a href="car-insurance.html">ביטוח רכב</a><a href="overseas-travel-insurance.html">ביטוח נסיעות לחו״ל</a><hr><a href="about.html">מי אנחנו</a><a href="blog.html">בלוג</a><a href="contact.html">יצירת קשר</a><hr><a href="https://finance.bitax.co.il/">כניסה לאזור האישי</a></div>
+</details>
 </div>
 </nav>
 </header>
@@ -147,56 +141,56 @@ input::placeholder{color:#8C89A0}
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
 
-<a href="https://bitax.co.il/tax-refunds/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="tax-refunds.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #F8D754; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14121F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path><path d="M12 8v4l3 2"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">החזרי מס</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">בדיקה של עד 6 שנים אחורה, והגשה רק כשמגיע לך כסף.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/mirroring-the-insurance-portfolio/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="mirroring-the-insurance-portfolio.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">שיקוף תיק הביטוח</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">מאתרים כפילויות, חוסרים וכיסויים שכבר לא מתאימים לך.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/pension-portfolio-review/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="pension-portfolio-review.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"></path><path d="M6 16l4-5 3 3 5-7"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">שיקוף תיק הפנסיה</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">דמי ניהול, מסלולים וקרנות – תמונה ברורה של העתיד שלך.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/finding-funds/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="finding-funds.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path><path d="M11 8v6M8 11h6"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">איתור כספים</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">כספים ממעסיקים קודמים וחסכונות שנשכחו – חוזרים אליך.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/mortgages/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="mortgages.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-6h4v6"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">משכנתאות</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">תמהיל חכם ומחזור – גם כשהבנק כבר אמר לא.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/checking-the-payslip/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="checking-the-payslip.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">בדיקת תלוש שכר</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">טעויות קטנות בתלוש הן כסף גדול לאורך השנים.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/car-insurance/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="car-insurance.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16V11l2-5h10l2 5v5"></path><path d="M3 16h18v3H3z"></path><circle cx="7.5" cy="19" r="1.5"></circle><circle cx="16.5" cy="19" r="1.5"></circle></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">ביטוח רכב</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">השוואה בין חברות והתאמה בדיוק למה שאתה צריך.</span>
 <span style="font-size: 14px; font-weight: 600; color: #14121F">מידע נוסף ←</span>
 </a>
 
-<a href="https://bitax.co.il/overseas-travel-insurance/" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+<a href="overseas-travel-insurance.html" class="bx-card" style="text-decoration: none; color: #14121F; background: #FAFAFC; border: 1px solid #EEEDE7; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
 <span style="width: 48px; height: 48px; border-radius: 14px; background: #FDF3C9; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 13.5L3 11l1.5-1.5 8 1 4-4c.8-.8 2.2-.8 3 0s.8 2.2 0 3l-4 4 1 8L15 23l-2.5-7.5"></path></svg></span>
 <span style="font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 21px">ביטוח נסיעות לחו״ל</span>
 <span style="font-size: 15px; line-height: 1.55; color: #5B5870; flex: 1">פוליסה בדקות, בלי לשלם על כיסויים שאין בהם צורך.</span>
@@ -310,17 +304,15 @@ input::placeholder{color:#8C89A0}
 </div>
 </section>
 
-<!-- FOOTER -->
-<footer style="border-top: 1px solid rgba(20,18,31,.07); padding: 36px 24px; background: #FAFAFC">
-<div style="max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; font-size: 14px; color: #5B5870">
-<span style="font-family: 'Rubik', sans-serif; font-weight: 800; font-size: 20px; color: #14121F" dir="ltr">bitax</span>
-<div style="display: flex; flex-wrap: wrap; gap: 24px">
-<a href="https://bitax.co.il/terms/" style="color: #5B5870; text-decoration: none">תקנון</a>
-<a href="https://bitax.co.il/access/" style="color: #5B5870; text-decoration: none">הצהרת נגישות</a>
-<a href="https://bitax.co.il/privacy-policy" style="color: #5B5870; text-decoration: none">מדיניות פרטיות</a>
-<a href="https://wa.me/message/BSJJNWU7KOG6B1" style="color: #5B5870; text-decoration: none">וואטסאפ</a>
+<footer class="bx-footer">
+<div class="wrap">
+<div class="bx-footer-grid">
+<div class="bx-footer-col" style="max-width:300px"><a href="index.html" class="bx-logo"><span class="bx-logo-mark">b</span><span class="bx-logo-word" dir="ltr">bitax</span></a><span style="font-size:15px;line-height:1.6;color:var(--muted)">פלטפורמה פיננסית חכמה שעושה סדר בכסף שלך – במקום אחד.</span></div>
+<div class="bx-footer-col"><b>שירותים</b><a href="tax-refunds.html">החזרי מס</a><a href="mirroring-the-insurance-portfolio.html">שיקוף תיק הביטוח</a><a href="pension-portfolio-review.html">שיקוף תיק הפנסיה</a><a href="finding-funds.html">איתור כספים</a></div>
+<div class="bx-footer-col"><b>&nbsp;</b><a href="mortgages.html">משכנתאות</a><a href="checking-the-payslip.html">בדיקת תלוש השכר</a><a href="car-insurance.html">ביטוח רכב</a><a href="overseas-travel-insurance.html">ביטוח נסיעות לחו״ל</a></div>
+<div class="bx-footer-col"><b>ביטקס</b><a href="about.html">מי אנחנו</a><a href="blog.html">בלוג</a><a href="contact.html">יצירת קשר</a><a href="https://finance.bitax.co.il/">אזור אישי</a><a href="https://wa.me/message/BSJJNWU7KOG6B1">וואטסאפ</a></div>
 </div>
-<span>© 2026 BITAX. כל הזכויות שמורות.</span>
+<div class="bx-footer-bottom"><span>© 2026 BITAX. כל הזכויות שמורות.</span><span style="display:flex;gap:20px;flex-wrap:wrap"><a href="https://bitax.co.il/terms/" style="color:inherit;text-decoration:none">תקנון</a><a href="https://bitax.co.il/access/" style="color:inherit;text-decoration:none">הצהרת נגישות</a><a href="https://bitax.co.il/privacy-policy" style="color:inherit;text-decoration:none">מדיניות פרטיות</a></span></div>
 </div>
 </footer>
 
