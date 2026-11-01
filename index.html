@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF6DE">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
@@ -51,7 +52,7 @@
   --wa-bg:#EAF6EE; --wa-fg:#1E6B3C; --wa-line:#D3ECDB;
   --font:"Heebo","Arial Hebrew","Segoe UI",system-ui,sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+@media not all{:root:not([data-theme="light"]){
   --bg:#13110C; --surface:#1E1B14; --line:#2F2A20; --ink:#F5F0E3; --muted:#B5AC97;
   --brand:#F4C845; --on-brand:#1F1A10; --brand-soft:#352C14; --amber:#F4C845;
   --good:#F4C845; --good-soft:#352C14; --warn-soft:#352C14;
