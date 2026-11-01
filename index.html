@@ -921,7 +921,7 @@ function docsView(){
   if(S.stage==='docs') main=`
     <span class="label">עוד צעד אחד</span>
     <h2 class="dk-h">חסרים לנו המסמכים שלך</h2>
-    <p class="muted" style="margin:0">ברגע שהם אצלנו, נביא לכאן את כל הביטוחים והחיסכון שלך מהמסלקה ומהר הביטוח.</p>
+    <p class="muted" style="margin:0">ברגע שהם אצלנו נוכל להתקדם בתהליך החזר המס, ובנוסף, כחלק מהשירות, לשקף לך את עולם הביטוח והפיננסים שלך.</p>
     <ul class="dk-list">${DOC_KIT.map(d=>`<li><span class="dk-i"></span><span>${d}</span></li>`).join('')}</ul>
     <a class="dk-btn" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>`;
   else if(S.stage==='review') main=`
