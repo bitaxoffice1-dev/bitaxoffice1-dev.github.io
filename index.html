@@ -411,7 +411,7 @@ body{background-color:var(--bg);background-image:linear-gradient(rgba(20,18,31,.
 
 <script>
 const fmt = n => '₪' + Math.round(n).toLocaleString('en-US');
-const NAME = 'ישראל';
+let NAME = 'ישראל';
 const IC = {
   home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
   shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
@@ -490,6 +490,15 @@ function sendLead(body){
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} } };
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
 const S = {session: store.get('bitax_session'), auth:{step:'id', id:'', how:'sms', to:'', err:'', code:''}, mailSent: store.get('bitax_mail'), mailOpen:false, view:'home', done: store.get('bitax_done') || {}, f106:false, sheet:null, success:null, rolled:false, mkt: store.get('bitax_mkt'), plan: store.get('bitax_plan'), wd: store.get('bitax_wd')||{}, how:'wa'};
+const LOGIN_ERR = {
+  nomatch:'לא מצאנו התאמה בין תעודת הזהות לפרטים. בדקו שהקלדתם את הטלפון או האימייל שמסרתם לנו.',
+  limit:'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.',
+  sms:'כניסה ב-SMS תיפתח בקרוב. בינתיים אפשר לבחור אימייל.',
+  noemail:'אין לנו אימייל שמור עבורך. כתבו לנו בוואטסאפ ונעזור.',
+  busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
+};
+function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
+if(S.session && S.session.client) applyClient(S.session.client);
 { const m=location.search.match(/[?&]demo=(docs|review|sent)\b/); if(m) S.stage=m[1]; }
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
@@ -825,7 +834,7 @@ function loginView(){
     <span class="lg2-c1" aria-hidden="true"></span><span class="lg2-c2" aria-hidden="true"></span>
     <form class="card lg-card lg2-card" id="lg-code" novalidate>
       <button type="button" class="link-btn" data-act="lg-back">${icon('arrow',16,2)} שינוי פרטים</button>
-      <p class="muted" style="margin:0">שלחנו קוד בן 6 ספרות ${A.how==='sms'?'בהודעת SMS ל':'במייל ל'}<b class="num" style="color:var(--ink);direction:ltr;display:inline-block">${A.to}</b></p>
+      <p class="muted" style="margin:0">שלחנו קוד בן 6 ספרות ${A.how==='sms'?'בהודעת SMS ל':'במייל ל'}<b class="num" style="color:var(--ink);direction:ltr;display:inline-block">${A.shown||A.to}</b></p>
       ${A.server?'':`<div class="hint">גרסת ניסיון: הקוד שלך הוא <b class="num" style="letter-spacing:3px">${A.code}</b></div>`}
       <label class="label" for="lg-otp">קוד אימות</label>
       <input class="field otp" id="lg-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="------">
@@ -980,9 +989,12 @@ document.addEventListener('submit',e=>{
     if(!validId(A.id)) A.err='מספר תעודת הזהות לא תקין. צריך 9 ספרות, כולל ספרת ביקורת.';
     else if(A.how==='sms' && !okPhone(A.to)) A.err='מספר הנייד לא נראה תקין. למשל: 050-1234567.';
     else if(A.how==='mail' && !okMail(A.to)) A.err='כתובת האימייל לא נראית תקינה.';
-    else if(A.how==='mail' && MAIL_API){
+    else if(MAIL_API){
       A.err=''; const btn=e.target.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='שולחים…';
-      api({type:'code', to:A.to}).then(r=>{ if(r.ok){ A.server=true; A.step='code'; } else A.err='לא הצלחנו לשלוח קוד. אפשר לנסות שוב.'; render(); const f=document.getElementById('lg-otp'); if(f) f.focus(); })
+      api({type:'login', id:A.id, how:A.how==='mail'?'email':'sms', to:A.to}).then(r=>{
+        if(r.ok){ A.server=true; A.step='code'; if(r.to) A.shown=r.to; }
+        else A.err = LOGIN_ERR[r.err] || 'לא הצלחנו לשלוח קוד. אפשר לנסות שוב.';
+        render(); const f=document.getElementById('lg-otp'); if(f) f.focus(); })
         .catch(()=>{ A.err='לא הצלחנו לשלוח קוד. אפשר לנסות שוב.'; render(); });
       return;
     }
@@ -993,11 +1005,11 @@ document.addEventListener('submit',e=>{
     e.preventDefault();
     const v=document.getElementById('lg-otp').value.trim();
     if(v.length<6){ A.err='הקוד צריך להכיל 6 ספרות.'; render(); return; }
-    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString()}; store.set('bitax_session',S.session);
+    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString(), client:S.client||null}; store.set('bitax_session',S.session);
     A.err=''; A.step='id'; S.view='home'; S.rolled=false;
     try{ history.replaceState(null,'','#home'); }catch(_){}
     render(); window.scrollTo({top:0}); if(!S.mkt) consentModal(); };
-    if(A.server){ waitOn(); api({type:'verify', to:A.to, code:v}).then(r=>{ if(r.ok){ enter(); waitOff(2400); } else { waitOff(); A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ waitOff(); A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
+    if(A.server){ waitOn(); api({type:'mverify', id:A.id, code:v}).then(r=>{ if(r.ok){ S.client=r.client; applyClient(r.client); enter(); waitOff(2400); } else { waitOff(); A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ waitOff(); A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
     if(v!==A.code){ A.err='הקוד שגוי. אפשר לנסות שוב או לבקש קוד חדש.'; render(); return; }
     waitOn(); enter(); waitOff(2400); return;
   }
@@ -1012,7 +1024,7 @@ document.addEventListener('change',e=>{ if(e.target.name==='lg-how'){ const idEl
 document.addEventListener('input',e=>{ if(e.target.id==='lg-otp'||e.target.id==='lg-id') e.target.value=e.target.value.replace(/\D/g,''); });
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="lg-back"]')){ S.auth.step='id'; S.auth.err=''; render(); return; }
-  if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'code',to:S.auth.to}).then(()=>toast('שלחנו קוד חדש למייל')).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
+  if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'login',id:S.auth.id,how:S.auth.how==='mail'?'email':'sms',to:S.auth.to}).then(()=>toast('שלחנו קוד חדש למייל')).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
   if(e.target.closest('[data-act="open-plan"]')){ openPlan(); return; }
   if(e.target.closest('[data-act="logout"]')){ S.session=null; try{localStorage.removeItem('bitax_session')}catch(_){}; S.auth={step:'id',id:'',how:'sms',to:'',err:'',code:''}; render(); window.scrollTo({top:0}); return; }
 });
