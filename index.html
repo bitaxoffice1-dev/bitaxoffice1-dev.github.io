@@ -491,7 +491,7 @@ const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
 const S = {session: store.get('bitax_session'), auth:{step:'id', id:'', how:'sms', to:'', err:'', code:''}, mailSent: store.get('bitax_mail'), mailOpen:false, view:'home', done: store.get('bitax_done') || {}, f106:false, sheet:null, success:null, rolled:false, mkt: store.get('bitax_mkt'), plan: store.get('bitax_plan'), wd: store.get('bitax_wd')||{}, how:'wa'};
 const LOGIN_ERR = {
-  nomatch:'לא מצאנו התאמה בין תעודת הזהות לפרטים. בדקו שהקלדתם את הטלפון או האימייל שמסרתם לנו.',
+  nomatch:'לא מצאנו לקוח עם הפרטים האלה. בדקו את תעודת הזהות ואת הטלפון או האימייל שמסרתם לנו.',
   limit:'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.',
   sms:'כניסה ב-SMS תיפתח בקרוב. בינתיים אפשר לבחור אימייל.',
   noemail:'אין לנו אימייל שמור עבורך. כתבו לנו בוואטסאפ ונעזור.',
@@ -986,7 +986,8 @@ document.addEventListener('submit',e=>{
   if(e.target.id==='lg-form'){
     e.preventDefault();
     A.id=document.getElementById('lg-id').value.replace(/\D/g,''); A.to=document.getElementById('lg-to').value.trim();
-    if(!validId(A.id)) A.err='מספר תעודת הזהות לא תקין. צריך 9 ספרות, כולל ספרת ביקורת.';
+    if(!/^\d{5,9}$/.test(A.id)) A.err='צריך להקליד את כל 9 הספרות של תעודת הזהות.';
+    else if(!validId(A.id)) A.err='מספר תעודת הזהות שגוי. כנראה נפלה טעות בהקלדה, כדאי לבדוק שוב.';
     else if(A.how==='sms' && !okPhone(A.to)) A.err='מספר הנייד לא נראה תקין. למשל: 050-1234567.';
     else if(A.how==='mail' && !okMail(A.to)) A.err='כתובת האימייל לא נראית תקינה.';
     else if(MAIL_API){
