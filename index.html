@@ -498,8 +498,9 @@ const LOGIN_ERR = {
   busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
 };
 function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
-if(S.session && S.session.client) applyClient(S.session.client);
-{ const m=location.search.match(/[?&]demo=(docs|review|sent)\b/); if(m) S.stage=m[1]; }
+// דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
+{ const m=location.search.match(/[?&]demo=(full|docs|review|sent)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
+
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
 const doneItems = () => SAVE_ITEMS.filter(x=>S.done[x.key]);
