@@ -490,6 +490,10 @@ function sendLead(body){
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} } };
 const CLIENT = {name:'ישראל ישראלי', id:'123456782', age:38, phone:'050-1234567', email:'israel@example.com'};
 const S = {session: store.get('bitax_session'), auth:{step:'id', id:'', how:'sms', to:'', err:'', code:''}, mailSent: store.get('bitax_mail'), mailOpen:false, view:'home', done: store.get('bitax_done') || {}, f106:false, sheet:null, success:null, rolled:false, mkt: store.get('bitax_mkt'), plan: store.get('bitax_plan'), wd: store.get('bitax_wd')||{}, how:'wa'};
+/* ניתוק אוטומטי: 15 דקות בלי פעילות, או 12 שעות מהכניסה */
+const IDLE_MS = 15*60*1000, MAX_MS = 12*60*60*1000;
+function sessionExpired(ss){ if(!ss || ss.demo) return false; const now=Date.now(); const at=Date.parse(ss.at||0)||0; const last=Number(ss.last||at)||at; return (now-at>MAX_MS) || (now-last>IDLE_MS); }
+if(sessionExpired(S.session)){ S.session=null; try{localStorage.removeItem('bitax_session')}catch(_){}; S.expired=true; }
 const LOGIN_ERR = {
   nomatch:'לא מצאנו לקוח עם הפרטים האלה. בדקו את תעודת הזהות ואת הטלפון או האימייל שמסרתם לנו.',
   limit:'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.',
@@ -811,6 +815,7 @@ function loginView(){
   if(A.step==='id') return `<div class="lg lg2">
     <h1 class="lg2-h" style="white-space:nowrap;font-size:clamp(30px,9vw,44px)">טוב לראות <span>אותך</span></h1>
     <p class="lg2-p">כל הביטוחים והחיסכון שלך, במקום אחד.</p>
+    ${S.expired?'<div class="hint" style="margin-top:10px">התנתקת אוטומטית אחרי זמן ללא פעילות, לשמירה על הפרטים שלך. אפשר להיכנס שוב.</div>':''}
     <div class="lg2-stage">
     <span class="lg2-c1" aria-hidden="true"></span><span class="lg2-c2" aria-hidden="true"></span>
     <form class="card lg-card lg2-card" id="lg-form" novalidate>
@@ -986,7 +991,7 @@ document.addEventListener('submit',e=>{
   const A=S.auth;
   if(e.target.id==='lg-form'){
     e.preventDefault();
-    A.id=document.getElementById('lg-id').value.replace(/\D/g,''); A.to=document.getElementById('lg-to').value.trim();
+    S.expired=false; A.id=document.getElementById('lg-id').value.replace(/\D/g,''); A.to=document.getElementById('lg-to').value.trim();
     if(!/^\d{5,9}$/.test(A.id)) A.err='צריך להקליד את כל 9 הספרות של תעודת הזהות.';
     else if(!validId(A.id)) A.err='מספר תעודת הזהות שגוי. כנראה נפלה טעות בהקלדה, כדאי לבדוק שוב.';
     else if(A.how==='sms' && !okPhone(A.to)) A.err='מספר הנייד לא נראה תקין. למשל: 050-1234567.';
@@ -1028,7 +1033,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="lg-back"]')){ S.auth.step='id'; S.auth.err=''; render(); return; }
   if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'login',id:S.auth.id,how:S.auth.how==='mail'?'email':'sms',to:S.auth.to}).then(()=>toast('שלחנו קוד חדש למייל')).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
   if(e.target.closest('[data-act="open-plan"]')){ openPlan(); return; }
-  if(e.target.closest('[data-act="logout"]')){ S.session=null; try{localStorage.removeItem('bitax_session')}catch(_){}; S.auth={step:'id',id:'',how:'sms',to:'',err:'',code:''}; render(); window.scrollTo({top:0}); return; }
+  if(e.target.closest('[data-act="logout"]')){ logoutNow(false); return; }
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(S.modal==='approve') closeModal(); else if(S.sheet && !S.modal) closeSheet(); }});
 document.addEventListener('change',e=>{
@@ -1037,6 +1042,13 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('change',e=>{if(e.target.id==='f106'&&e.target.files[0]){S.f106=true;render();toast('קיבלנו, תודה! נבדוק אם מגיע לך עוד החזר');}});
 { const h = location.hash.slice(1); S.view = isTab(h) ? h : 'home'; if(h && !isTab(h)) try{ history.replaceState(null,'','#home'); }catch(_){} }
+function logoutNow(expired){ S.session=null; S.client=null; S.expired=!!expired; try{localStorage.removeItem('bitax_session')}catch(_){}; S.auth={step:'id',id:'',how:'sms',to:'',err:'',code:''}; S.view='home'; render(); window.scrollTo({top:0}); }
+let lastTouch=0;
+function touch(){ if(!S.session || S.session.demo) return; const n=Date.now(); if(n-lastTouch<20000) return; lastTouch=n; S.session.last=new Date(n).toISOString(); store.set('bitax_session',S.session); }
+['click','keydown','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,touch,{passive:true}));
+function checkExpiry(){ if(S.session && sessionExpired(S.session)) logoutNow(true); }
+setInterval(checkExpiry,30000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) checkExpiry(); });
 render();
 if(S.session && !S.mkt) consentModal();
 </script>
