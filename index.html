@@ -58,6 +58,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 .rf-amt{margin:18px auto 8px;display:inline-flex;flex-direction:column;align-items:center;background:#F8D754;border-radius:20px;padding:14px 28px}
 .rf-amt small{font-size:13px;color:#5C4A08}.rf-amt b{font-family:Rubik,Heebo,sans-serif;font-weight:800;font-size:38px;line-height:1.1}
+
+.hello-total{margin-top:6px;font-size:15px;color:#3D3412}.hello-total b{font-weight:800}
 </style>
 <title>Bitax אזור אישי</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -945,7 +947,8 @@ function stageSteps(){
 }
 function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
 function docsView(){
-  const hello = home().split('</section>')[0]+'</section>';
+  let hello = home().split('</section>')[0]+'</section>';
+  if(S.stage==='done' && CLIENT.refund) hello = hello.replace('</h1>', `</h1><div class="hello-total">עד היום החזרנו לך <b dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`);
   let main;
   if(S.stage==='docs') main=`
     <span class="label">עוד צעד אחד</span>
