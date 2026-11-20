@@ -525,7 +525,7 @@ const LOGIN_ERR = {
 };
 function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; CLIENT.years=c.years||null; CLIENT.refund=Number(c.refund)||0; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
-{ const m=location.search.match(/[?&]demo=(full|docs|review|sent|norefund|refund)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(m[1]==='refund') CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
+{ const m=location.search.match(/[?&]demo=(full|docs|review|sent|norefund|refund|done)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(m[1]==='refund'||m[1]==='done') CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
@@ -936,11 +936,11 @@ function leadNote(action, extra){
 
 
 const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה','צ׳ק מבוטל או אישור ניהול חשבון'];
-const STAGE_STEP={docs:0,review:1,sent:2,refund:3,norefund:4};
+const STAGE_STEP={docs:0,review:1,sent:2,refund:3,done:4,norefund:4};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר','הכסף בדרך לחשבון הבנק שלך']];
-  const show = S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : S.stage==='refund' ? st : st.slice(0,3);
+  const show = S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? st : st.slice(0,3);
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
 function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
@@ -963,6 +963,13 @@ function docsView(){
       <p class="muted" style="margin:0">ממתינים להפקדה של החזר המס לחשבון הבנק שלך.</p>
       ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר הצפוי</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>
       <p class="muted" style="margin:0;font-size:13px">הסכום הסופי נקבע על ידי מס הכנסה ועשוי להשתנות מעט.</p>`:''}
+    </div>`;
+  else if(S.stage==='done') main=`
+    <div class="nr-top">
+      <span class="label">התהליך הושלם</span>
+      <h2 class="dk-h" style="margin:4px 0 6px">החזרנו לך כסף 🎉</h2>
+      ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר שקיבלת</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`:''}
+      <p class="muted" style="margin:0">תודה שבחרת בנו. נבדוק אותך שוב בשנה הבאה, ובינתיים אנחנו כאן גם לביטוחים ולפנסיה שלך.</p>
     </div>`;
   else if(S.stage==='norefund') main=`
     <div class="nr-top">
@@ -1001,7 +1008,7 @@ function pendingView(kind){
     review: { h:'המסמכים בבדיקה',    p:'קיבלנו את המסמכים ואנחנו בודקים אותם. מיד אחרי הבדיקה נתחיל לאסוף את הנתונים שלך.' },
     sent:   { h:'בתהליך קליטה',      p: ins ? 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.'
                                             : 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן כמה צברת, מה דמי הניהול ומה כדאי לבדוק.' }
-  }[(S.stage==='norefund'||S.stage==='refund')?'sent':S.stage] || { h:'בתהליך קליטה', p:'' };
+  }[(S.stage==='norefund'||S.stage==='refund'||S.stage==='done')?'sent':S.stage] || { h:'בתהליך קליטה', p:'' };
   const btn = S.stage==='docs' ? `<a class="dk-btn" style="margin-top:16px" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>` : '';
   return `<section class="page-title"><h1>${t}</h1></section>
   <section class="card" style="text-align:center;padding:34px 20px">
@@ -1012,7 +1019,9 @@ function pendingView(kind){
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 function stageJourney(){
+  const got = (S.stage==='done'||S.stage==='refund') && CLIENT.refund;
   return `<section class="page-title"><h1>התהליך שלך</h1></section>
+  ${got?`<section class="card" style="text-align:center"><div class="rf-amt" style="margin:4px auto"><small>${S.stage==='done'?'החזרנו לך':'סכום ההחזר הצפוי'}</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div></section>`:''}
   <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
