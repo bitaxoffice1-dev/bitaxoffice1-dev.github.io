@@ -527,7 +527,7 @@ const LOGIN_ERR = {
 };
 function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; CLIENT.years=c.years||null; CLIENT.refund=Number(c.refund)||0; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
-{ const m=location.search.match(/[?&]demo=(full|docs|review|sent|norefund|refund|done)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(m[1]==='refund'||m[1]==='done') CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
+{ const m=location.search.match(/[?&]demo=(full|sign|docs|review|sent|norefund|refund|done)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(m[1]==='refund'||m[1]==='done') CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
@@ -938,11 +938,11 @@ function leadNote(action, extra){
 
 
 const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה','צ׳ק מבוטל או אישור ניהול חשבון'];
-const STAGE_STEP={docs:0,review:1,sent:2,refund:3,done:4,norefund:4};
+const STAGE_STEP={sign:0,docs:0,review:1,sent:2,refund:3,done:4,norefund:4};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר', S.stage==='done' ? 'ההחזר הופקד לחשבון שלך' : 'הכסף בדרך לחשבון הבנק שלך']];
-  const show = S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? st : st.slice(0,3);
+  const show = S.stage==='sign' ? [['חתימה על ההסכם','הסכם שירות וייפוי כוח']] : S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? st : st.slice(0,3);
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
 function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
@@ -967,6 +967,11 @@ function docsView(){
       ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר הצפוי</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>
       <p class="muted" style="margin:0;font-size:13px">הסכום הסופי נקבע על ידי מס הכנסה ועשוי להשתנות מעט.</p>`:''}
     </div>`;
+  else if(S.stage==='sign') main=`
+    <span class="label">עוד צעד אחד</span>
+    <h2 class="dk-h">נשאר רק לחתום</h2>
+    <p class="muted" style="margin:0 0 16px">כדי שנוכל להתחיל לטפל בהחזר המס שלך, צריך לחתום על הסכם השירות ועל ייפוי הכוח.</p>
+    <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לחתימה דרך הוואטסאפ</a>`;
   else if(S.stage==='done') main=`
     <div class="nr-top">
       <span class="label">התהליך הושלם</span>
@@ -1007,6 +1012,7 @@ function pendingView(kind){
   const ic = ins ? 'shield' : 'growth';
   const what = ins ? 'הביטוחים שלך' : 'הפנסיה והחיסכון שלך';
   const T = {
+    sign:   { h:'מחכים לחתימה שלך', p:'אחרי שתחתום על ההסכם ותעלה את המסמכים, נוכל להביא לכאן את הנתונים שלך.' },
     docs:   { h:'מחכים למסמכים שלך', p:`כדי שנוכל להביא לכאן את ${what}, צריך קודם להעלות את המסמכים.` },
     review: { h:'המסמכים בבדיקה',    p:'קיבלנו את המסמכים ואנחנו בודקים אותם. מיד אחרי הבדיקה נתחיל לאסוף את הנתונים שלך.' },
     sent:   { h:'בתהליך קליטה',      p: ins ? 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.'
