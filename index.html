@@ -501,9 +501,9 @@ const LOGIN_ERR = {
   noemail:'אין לנו אימייל שמור עבורך. כתבו לנו בוואטסאפ ונעזור.',
   busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
 };
-function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
+function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
-{ const m=location.search.match(/[?&]demo=(full|docs|review|sent)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
+{ const m=location.search.match(/[?&]demo=(full|docs|review|sent)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
@@ -938,7 +938,13 @@ function docsView(){
     <span class="label">בדרך</span>
     <h2 class="dk-h">הבקשה נשלחה</h2>
     <p class="muted" style="margin:0">ביקשנו את הנתונים שלך מהמסלקה ומהר הביטוח. הם יופיעו כאן תוך עד 48 שעות.</p>`;
-  return hello+`<section class="card">${main}</section>
+  const pay = CLIENT.pay ? `<section class="card" style="background:#FDF3C9;border-color:#F8D754">
+    <span class="label">חשוב</span>
+    <h2 class="dk-h" style="font-size:20px">נשאר להשלים את התשלום</h2>
+    <p class="muted" style="margin:0 0 14px">כדי שנוכל להתקדם בתהליך, צריך להשלים את אמצעי התשלום. כתבו לנו ונסדר את זה יחד.</p>
+    <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לשירות לקוחות בוואטסאפ</a>
+  </section>` : '';
+  return hello+`<section class="card">${main}</section>${pay}
   <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
