@@ -947,11 +947,32 @@ function docsView(){
   <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
+
+/* ביטוחים / פנסיה / התהליך לפני שהנתונים הגיעו */
+function pendingView(kind){
+  const t = kind==='ins' ? 'הביטוחים שלך' : 'הפנסיה והחיסכון שלך';
+  const ic = kind==='ins' ? 'shield' : 'growth';
+  const msg = S.stage==='sent'
+    ? 'הנתונים בתהליך קליטה. ברגע שהם יגיעו, תראה כאן את כל ה'+(kind==='ins'?'ביטוחים שלך: מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.':'קרנות והחיסכון שלך: כמה צברת, דמי הניהול ומה כדאי לבדוק.')
+    : 'כאן יופיעו '+(kind==='ins'?'כל הביטוחים שלך':'כל הקרנות והחיסכון שלך')+', אחרי שנסיים את בדיקת המסמכים ונתחיל לקלוט את הנתונים.';
+  return `<section class="page-title"><h1>${t}</h1></section>
+  <section class="card" style="text-align:center;padding:34px 20px">
+    <span class="r-ic" style="width:56px;height:56px;margin:0 auto 14px;background:var(--brand-soft);color:var(--amber)">${icon(ic,26)}</span>
+    <h2 class="dk-h" style="font-size:21px">${S.stage==='sent'?'בתהליך קליטה':'עוד מעט כאן'}</h2>
+    <p class="muted" style="margin:0">${msg}</p>
+  </section>
+  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+}
+function stageJourney(){
+  return `<section class="page-title"><h1>התהליך שלך</h1></section>
+  <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
+  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+}
 /* ---------- render + events ---------- */
 function render(){
   if(!S.session){ document.getElementById('app').innerHTML = loginView(); return; }
   const firstHome = !S.rolled && S.view==='home';
-  const v = (S.stage && S.view!=='journey') ? docsView : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
+  const v = S.stage ? (S.view==='insurance' ? ()=>pendingView('ins') : S.view==='pension' ? ()=>pendingView('pen') : S.view==='journey' ? stageJourney : docsView) : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
   document.getElementById('app').innerHTML = shell(v());
   if(firstHome) S.rolled = true;
 }
