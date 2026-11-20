@@ -939,7 +939,7 @@ const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – 
 const STAGE_STEP={docs:0,review:1,sent:2,refund:3,done:4,norefund:4};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
-  const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר','הכסף בדרך לחשבון הבנק שלך']];
+  const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר', S.stage==='done' ? 'ההחזר הופקד לחשבון שלך' : 'הכסף בדרך לחשבון הבנק שלך']];
   const show = S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? st : st.slice(0,3);
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
