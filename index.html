@@ -503,7 +503,7 @@ const LOGIN_ERR = {
 };
 function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
-{ const m=location.search.match(/[?&]demo=(full|docs|review|sent)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
+{ const m=location.search.match(/[?&]demo=(full|docs|review|sent|norefund)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
@@ -914,7 +914,7 @@ function leadNote(action, extra){
 
 
 const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה','צ׳ק מבוטל או אישור ניהול חשבון'];
-const STAGE_STEP={docs:0,review:1,sent:2};
+const STAGE_STEP={docs:0,review:1,sent:2,norefund:3};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו']];
@@ -934,6 +934,9 @@ function docsView(){
     <span class="label">קיבלנו</span>
     <h2 class="dk-h">המסמכים אצלנו</h2>
     <p class="muted" style="margin:0">אנחנו בודקים שהכול תקין. אם משהו יחסר, נחזור אליך.</p>`;
+  else if(S.stage==='norefund') main=`
+    <h2 class="dk-h">לא נמצא החזר מס הפעם</h2>
+    <p class="muted" style="margin:0">בדקנו את השנים 2020 עד 2025, ולא נמצא לך החזר מס עבורן. נבדוק אותך שוב בשנה הבאה ונעדכן אותך. נתראה! 👋</p>`;
   else main=`
     <h2 class="dk-h">התיק שלך בטיפול</h2>
     <p class="muted" style="margin:0">המסמכים שלך תקינים והתיק עבר לשלב הטיפול. בינתיים אנחנו אוספים את נתוני הביטוח והחיסכון שלך, והם יופיעו כאן בקרוב.</p>`;
@@ -944,7 +947,7 @@ function docsView(){
     <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לשירות לקוחות בוואטסאפ</a>
   </section>` : '';
   return hello+`<section class="card">${main}</section>${pay}
-  <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
+  ${S.stage==='norefund'?'':`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 
@@ -959,7 +962,7 @@ function pendingView(kind){
     review: { h:'המסמכים בבדיקה',    p:'קיבלנו את המסמכים ואנחנו בודקים אותם. מיד אחרי הבדיקה נתחיל לאסוף את הנתונים שלך.' },
     sent:   { h:'בתהליך קליטה',      p: ins ? 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.'
                                             : 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן כמה צברת, מה דמי הניהול ומה כדאי לבדוק.' }
-  }[S.stage] || { h:'בתהליך קליטה', p:'' };
+  }[S.stage==='norefund'?'sent':S.stage] || { h:'בתהליך קליטה', p:'' };
   const btn = S.stage==='docs' ? `<a class="dk-btn" style="margin-top:16px" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>` : '';
   return `<section class="page-title"><h1>${t}</h1></section>
   <section class="card" style="text-align:center;padding:34px 20px">
