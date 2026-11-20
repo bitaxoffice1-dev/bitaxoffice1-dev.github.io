@@ -1,0 +1,44 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>אייקונים · אין החזר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Rubik:wght@800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAFAFC;font-family:Heebo,Arial,sans-serif;color:#14121F}
+.w{max-width:760px;margin:0 auto;padding:24px 16px}
+h1{font-family:Rubik;font-weight:800;font-size:26px;margin:0 0 4px}.s{color:#5B5870;margin:0 0 20px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.c{background:#fff;border:1px solid #ECEAF2;border-radius:24px;padding:22px 12px 16px;text-align:center}
+.n{position:relative;top:-6px;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#FDF3C9;font-weight:700;font-size:14px;float:right;margin:-10px 0 0 -2px}
+svg{width:110px;height:110px;overflow:visible;display:block;margin:0 auto}
+.t{font-weight:700;margin-top:10px}.d{font-size:13px;color:#5B5870}
+.k{stroke:#14121F;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.y{fill:#F8D754}.ys{fill:#FDF3C9}.w2{fill:#fff}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes sway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes pop{0%,60%,100%{transform:scale(1)}70%{transform:scale(1.12)}80%{transform:scale(.96)}}
+@keyframes spark{0%,40%{opacity:0;transform:scale(.3)}55%{opacity:1;transform:scale(1)}80%,100%{opacity:0;transform:scale(.6)}}
+@keyframes flip{0%,45%{transform:rotateX(0)}55%,95%{transform:rotateX(180deg)}100%{transform:rotateX(360deg)}}
+@keyframes peek{0%,8%{transform:translateY(70px)}22%,78%{transform:translateY(0)}92%,100%{transform:translateY(70px)}}
+@keyframes look{0%,30%,100%{transform:translateX(0)}40%,50%{transform:translateX(-4px)}60%,70%{transform:translateX(4px)}}
+@keyframes blink{0%,44%,52%,100%{transform:scaleY(1)}48%{transform:scaleY(.1)}}
+.bob{animation:bob 2.6s ease-in-out infinite}.sway{transform-origin:50% 90%;animation:sway 2.4s ease-in-out infinite}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop 2.4s ease-in-out infinite}
+.sp{transform-box:fill-box;transform-origin:center;animation:spark 2.4s ease-in-out infinite}.sp2{animation-delay:.3s}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 3.2s infinite}
+.pk{animation:peek 4.4s cubic-bezier(.5,0,.3,1) infinite}.lk{animation:look 4.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body><div class="w">
+<h1>אייקון למסך "אין החזר"</h1><p class="s">בצבעים של ביטקס, עם תנועה עדינה. תגיד מספר.</p>
+<div class="g" id="g"></div></div>
+<script>
+const star=(x,y,r,c='')=>`<path class="y k sp ${c}" style="stroke-width:2.2" d="M${x},${y-r} L${x+r*.3},${y-r*.3} L${x+r},${y} L${x+r*.3},${y+r*.3} L${x},${y+r} L${x-r*.3},${y+r*.3} L${x-r},${y} L${x-r*.3},${y-r*.3} Z"/>`;
+const head=`<path class="k" style="fill:none;stroke-width:8" d="M112,100 C116,118 120,130 122,150 L123,190"/><path class="w2 k" style="stroke-width:6" d="M66,70 L12,98 L70,88 Z"/><circle class="w2 k" style="stroke-width:8" cx="92" cy="76" r="30"/><g class="lk"><circle class="eye" cx="84" cy="70" r="7" fill="#14121F"/><circle cx="86.5" cy="67.5" r="2.2" fill="#fff"/></g>`;
+const items=[
+['חסידה מציצה','מציצה מאחורי הגבעה: "נחזור לבדוק"',`<svg viewBox="0 0 160 160"><defs><clipPath id="c1"><rect x="-40" y="-40" width="240" height="195"/></clipPath></defs><g clip-path="url(#c1)"><g class="pk">${head}</g></g><path class="y" d="M-6,158 A86,46 0 0 1 166,158 Z"/></svg>`],
+['לוח שנה צהוב','דף מתהפך לשנה הבאה',`<svg viewBox="0 0 120 120"><g class="bob"><rect class="y k" x="18" y="24" width="84" height="80" rx="16"/><path class="k" d="M18 50h84M42 14v18M78 14v18"/><text x="60" y="88" text-anchor="middle" font-family="Rubik" font-weight="800" font-size="26" fill="#14121F">2026</text></g>${star(104,22,9)}${star(14,96,7,'sp2')}</svg>`],
+['זכוכית מגדלת','מתנדנדת: "בדקנו לעומק"',`<svg viewBox="0 0 120 120"><g class="sway"><circle class="ys k" cx="52" cy="50" r="30"/><circle class="y" cx="52" cy="50" r="22" opacity=".9"/><path class="k" style="fill:none" d="M40 50l9 9 16-17"/><path class="k" style="stroke-width:9" d="M74 72l26 26"/></g></svg>`],
+['ערימת מטבעות','מטבע קופץ למעלה',`<svg viewBox="0 0 120 120"><ellipse class="y k" cx="60" cy="92" rx="34" ry="11"/><path class="y k" d="M26 80v12c0 6 15 11 34 11s34-5 34-11V80"/><ellipse class="y k" cx="60" cy="80" rx="34" ry="11"/><g class="bob"><ellipse class="y k" cx="60" cy="48" rx="24" ry="24"/><text x="60" y="58" text-anchor="middle" font-family="Rubik" font-weight="800" font-size="28" fill="#14121F">₪</text></g>${star(100,30,8)}</svg>`],
+['עיגול וי צהוב','פועם עם נצנוצים',`<svg viewBox="0 0 120 120"><g class="pop"><circle class="y k" cx="60" cy="60" r="38"/><path class="k" style="fill:none;stroke-width:6" d="M42 61l12 12 25-26"/></g>${star(100,24,10)}${star(18,34,7,'sp2')}${star(98,96,6)}</svg>`],
+['חסידה קורצת','פנים עם קריצה ונצנוץ',`<svg viewBox="0 0 160 160"><circle class="y" cx="80" cy="88" r="70"/><g transform="translate(4,0)"><path class="k" style="fill:none;stroke-width:8" d="M112,100 C116,118 120,130 122,150"/><path class="w2 k" style="stroke-width:6" d="M66,70 L12,98 L70,88 Z"/><circle class="w2 k" style="stroke-width:8" cx="92" cy="76" r="30"/><circle class="eye" cx="84" cy="70" r="7" fill="#14121F"/></g>${star(140,26,12)}</svg>`]
+];
+document.getElementById('g').innerHTML=items.map((it,i)=>`<div class="c"><span class="n">${i+1}</span>${it[2]}<div class="t">${it[0]}</div><div class="d">${it[1]}</div></div>`).join('');
+</script></body></html>
