@@ -36,6 +36,17 @@
 /* same look everywhere */
 :root{color-scheme:only light}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* no-refund */
+.nr-top{text-align:center;padding:6px 0 2px}
+.nr-ic{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#FDF3C9;color:#8A6D00}
+.nr-years{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:16px 0 14px}
+.nr-years span{font-size:13px;padding:5px 10px;border-radius:999px;background:#F3F2F7;color:#5B5870}
+.nr-next{display:inline-block;background:#FDF3C9;color:#14121F;border-radius:999px;padding:9px 16px;font-weight:500;font-size:14px}
+.nr-go{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;text-align:right}
+.nr-go button{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:16px 14px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.nr-go .r-ic{background:#FDF3C9;color:#8A6D00}
+.nr-go b{font-size:16px}.nr-go small{color:#5B5870;font-size:13px}
 </style>
 <title>Bitax אזור אישי</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -935,9 +946,13 @@ function docsView(){
     <h2 class="dk-h">המסמכים אצלנו</h2>
     <p class="muted" style="margin:0">אנחנו בודקים שהכול תקין. אם משהו יחסר, נחזור אליך.</p>`;
   else if(S.stage==='norefund') main=`
-    <h2 class="dk-h">לא נמצא החזר מס הפעם</h2>
-    <p class="muted" style="margin:0">בדקנו את השנים 2020 עד 2025, ולא נמצא לך החזר מס עבורן. נבדוק אותך שוב בשנה הבאה ונעדכן אותך. נתראה! 👋</p>
-    <p class="muted" style="margin:10px 0 0">בינתיים, הביטוחים והפנסיה שלך ממשיכים להיות כאן בשבילך.</p>`;
+    <div class="nr-top">
+      <span class="nr-ic">${icon('clock',28,2)}</span>
+      <h2 class="dk-h" style="margin:14px 0 6px">לא נמצא החזר מס הפעם</h2>
+      <p class="muted" style="margin:0">בדקנו את כל השנים האפשריות, ולא נמצא לך החזר עבורן.</p>
+      <div class="nr-years">${[2020,2021,2022,2023,2024,2025].map(y=>`<span>${y} ✓</span>`).join('')}</div>
+      <div class="nr-next">👋 נבדוק אותך שוב בשנה הבאה ונעדכן</div>
+    </div>`;
   else main=`
     <h2 class="dk-h">התיק שלך בטיפול</h2>
     <p class="muted" style="margin:0">המסמכים שלך תקינים והתיק עבר לשלב הטיפול. בינתיים אנחנו אוספים את נתוני הביטוח והחיסכון שלך, והם יופיעו כאן בקרוב.</p>`;
@@ -948,7 +963,11 @@ function docsView(){
     <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לשירות לקוחות בוואטסאפ</a>
   </section>` : '';
   return hello+`<section class="card">${main}</section>${pay}
-  ${S.stage==='norefund'?'':`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
+  ${S.stage==='norefund'?`<section class="card"><span class="label">בינתיים, ממשיכים ללוות אותך</span>
+    <div class="nr-go">
+      <button data-go="insurance"><span class="r-ic">${icon('shield',22)}</span><b>הביטוחים שלך</b><small>מה יש לך ואיפה אפשר לחסוך</small></button>
+      <button data-go="pension"><span class="r-ic">${icon('growth',22)}</span><b>הפנסיה שלך</b><small>צבירות ודמי ניהול</small></button>
+    </div></section>`:`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 
