@@ -961,7 +961,7 @@ function docsView(){
     <div class="nr-top">
       <h2 class="dk-h" style="margin:0 0 6px">ההחזר שלך בדרך 🎉</h2>
       <p class="muted" style="margin:0">ממתינים להפקדה של החזר המס לחשבון הבנק שלך.</p>
-      ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר הצפוי</small><b class="num">₪${Math.round(CLIENT.refund).toLocaleString('he-IL')}</b></div>
+      ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר הצפוי</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>
       <p class="muted" style="margin:0;font-size:13px">הסכום הסופי נקבע על ידי מס הכנסה ועשוי להשתנות מעט.</p>`:''}
     </div>`;
   else if(S.stage==='norefund') main=`
