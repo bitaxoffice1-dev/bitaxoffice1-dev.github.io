@@ -520,7 +520,7 @@ const LOGIN_ERR = {
   noemail:'אין לנו אימייל שמור עבורך. כתבו לנו בוואטסאפ ונעזור.',
   busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
 };
-function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
+function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; CLIENT.years=c.years||null; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
 { const m=location.search.match(/[?&]demo=(full|docs|review|sent|norefund)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
@@ -940,6 +940,7 @@ function stageSteps(){
   const show = S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : st;
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
+function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
 function docsView(){
   const hello = home().split('</section>')[0]+'</section>';
   let main;
@@ -958,7 +959,7 @@ function docsView(){
       <svg class="nr-cal" viewBox="0 0 120 120" aria-hidden="true"><g class="nr-bob"><rect class="nr-y nr-k" x="18" y="24" width="84" height="80" rx="16"/><path class="nr-k" fill="none" d="M18 50h84M42 14v18M78 14v18"/><text x="60" y="88" text-anchor="middle" font-family="Rubik,Heebo,sans-serif" font-weight="800" font-size="26" fill="#14121F">${new Date().getFullYear()+1}</text></g><path class="nr-y nr-k nr-sp" style="stroke-width:2.2" d="M104,13 L106.7,19.3 L113,22 L106.7,24.7 L104,31 L101.3,24.7 L95,22 L101.3,19.3 Z"/><path class="nr-y nr-k nr-sp nr-sp2" style="stroke-width:2.2" d="M14,89 L16.1,93.9 L21,96 L16.1,98.1 L14,103 L11.9,98.1 L7,96 L11.9,93.9 Z"/></svg>
       <h2 class="dk-h" style="margin:14px 0 6px">לא נמצא החזר מס הפעם</h2>
       <p class="muted" style="margin:0">בדקנו את כל השנים האפשריות, ולא נמצא לך החזר עבורן.</p>
-      <div class="nr-years">${[2020,2021,2022,2023,2024,2025].map(y=>`<span>${y} ✓</span>`).join('')}</div>
+      <div class="nr-years">${nrYears().map(y=>`<span>${y} ✓</span>`).join('')}</div>
       <div class="nr-next">👋 נבדוק שוב בשנה הבאה ונעדכן</div>
     </div>`;
   else main=`
