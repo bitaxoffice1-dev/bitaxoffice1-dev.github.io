@@ -950,16 +950,22 @@ function docsView(){
 
 /* ביטוחים / פנסיה / התהליך לפני שהנתונים הגיעו */
 function pendingView(kind){
-  const t = kind==='ins' ? 'הביטוחים שלך' : 'הפנסיה והחיסכון שלך';
-  const ic = kind==='ins' ? 'shield' : 'growth';
-  const msg = S.stage==='sent'
-    ? 'הנתונים בתהליך קליטה. ברגע שהם יגיעו, תראה כאן את כל ה'+(kind==='ins'?'ביטוחים שלך: מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.':'קרנות והחיסכון שלך: כמה צברת, דמי הניהול ומה כדאי לבדוק.')
-    : 'כאן יופיעו '+(kind==='ins'?'כל הביטוחים שלך':'כל הקרנות והחיסכון שלך')+', אחרי שנסיים את בדיקת המסמכים ונתחיל לקלוט את הנתונים.';
+  const ins = kind==='ins';
+  const t = ins ? 'הביטוחים שלך' : 'הפנסיה והחיסכון שלך';
+  const ic = ins ? 'shield' : 'growth';
+  const what = ins ? 'הביטוחים שלך' : 'הפנסיה והחיסכון שלך';
+  const T = {
+    docs:   { h:'מחכים למסמכים שלך', p:`כדי שנוכל להביא לכאן את ${what}, צריך קודם להעלות את המסמכים.` },
+    review: { h:'המסמכים בבדיקה',    p:`קיבלנו את המסמכים ואנחנו בודקים אותם. מיד אחרי הבדיקה נתחיל לאסוף את ${what}.` },
+    sent:   { h:'בתהליך קליטה',      p: ins ? 'אנחנו אוספים את נתוני הביטוחים שלך. ברגע שהם יגיעו תראה כאן מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.'
+                                            : 'אנחנו אוספים את נתוני הפנסיה והחיסכון שלך. ברגע שהם יגיעו תראה כאן כמה צברת, מה דמי הניהול ומה כדאי לבדוק.' }
+  }[S.stage] || { h:'בתהליך קליטה', p:'' };
+  const btn = S.stage==='docs' ? `<a class="dk-btn" style="margin-top:16px" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>` : '';
   return `<section class="page-title"><h1>${t}</h1></section>
   <section class="card" style="text-align:center;padding:34px 20px">
     <span class="r-ic" style="width:56px;height:56px;margin:0 auto 14px;background:var(--brand-soft);color:var(--amber)">${icon(ic,26)}</span>
-    <h2 class="dk-h" style="font-size:21px">${S.stage==='sent'?'בתהליך קליטה':'עוד מעט כאן'}</h2>
-    <p class="muted" style="margin:0">${msg}</p>
+    <h2 class="dk-h" style="font-size:21px">${T.h}</h2>
+    <p class="muted" style="margin:0">${T.p}</p>${btn}
   </section>
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
