@@ -978,7 +978,7 @@ function docsView(){
       <h2 class="dk-h" style="margin:4px 0 6px">נשאר לחתום על השומה</h2>
       <p class="muted" style="margin:0">שלחנו לך בוואטסאפ לינק לחתימה. ברגע שתחתום, ההחזר יוכל לצאת לדרך.</p>
       ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר שלך</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`:''}
-      <a class="dk-btn" style="margin-top:12px" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לא מצאת את הלינק? כתוב לנו</a>
+      <a class="dk-btn" style="margin-top:12px" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לא מצאת את הלינק? לוואטסאפ</a>
     </div>`;
   else if(S.stage==='done') main=`
     <div class="nr-top">
