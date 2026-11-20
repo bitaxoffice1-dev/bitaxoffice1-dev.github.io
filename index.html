@@ -947,11 +947,11 @@ function docsView(){
     <p class="muted" style="margin:0">אנחנו בודקים שהכול תקין. אם משהו יחסר, נחזור אליך.</p>`;
   else if(S.stage==='norefund') main=`
     <div class="nr-top">
-      <span class="nr-ic">${icon('clock',28,2)}</span>
+      <span class="nr-ic">${icon('coins',28,2)}</span>
       <h2 class="dk-h" style="margin:14px 0 6px">לא נמצא החזר מס הפעם</h2>
       <p class="muted" style="margin:0">בדקנו את כל השנים האפשריות, ולא נמצא לך החזר עבורן.</p>
       <div class="nr-years">${[2020,2021,2022,2023,2024,2025].map(y=>`<span>${y} ✓</span>`).join('')}</div>
-      <div class="nr-next">👋 נבדוק אותך שוב בשנה הבאה ונעדכן</div>
+      <div class="nr-next">👋 נבדוק שוב בשנה הבאה ונעדכן</div>
     </div>`;
   else main=`
     <h2 class="dk-h">התיק שלך בטיפול</h2>
