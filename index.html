@@ -47,6 +47,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .nr-go button{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:16px 14px;border:1px solid var(--line);border-radius:18px;background:#fff}
 .nr-go .r-ic{background:#FDF3C9;color:#8A6D00}
 .nr-go b{font-size:16px}.nr-go small{color:#5B5870;font-size:13px}
+
+.nr-cal{width:96px;height:96px;overflow:visible;display:block;margin:0 auto}
+.nr-k{stroke:#14121F;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}.nr-y{fill:#F8D754}
+.nr-bob{animation:nrbob 2.6s ease-in-out infinite}
+.nr-sp{transform-box:fill-box;transform-origin:center;animation:nrsp 2.4s ease-in-out infinite}.nr-sp2{animation-delay:.3s}
+@keyframes nrbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes nrsp{0%,40%{opacity:0;transform:scale(.3)}55%{opacity:1;transform:scale(1)}80%,100%{opacity:0;transform:scale(.6)}}
+@media (prefers-reduced-motion:reduce){.nr-bob,.nr-sp{animation:none}}
 </style>
 <title>Bitax אזור אישי</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -947,7 +955,7 @@ function docsView(){
     <p class="muted" style="margin:0">אנחנו בודקים שהכול תקין. אם משהו יחסר, נחזור אליך.</p>`;
   else if(S.stage==='norefund') main=`
     <div class="nr-top">
-      <span class="nr-ic">${icon('coins',28,2)}</span>
+      <svg class="nr-cal" viewBox="0 0 120 120" aria-hidden="true"><g class="nr-bob"><rect class="nr-y nr-k" x="18" y="24" width="84" height="80" rx="16"/><path class="nr-k" fill="none" d="M18 50h84M42 14v18M78 14v18"/><text x="60" y="88" text-anchor="middle" font-family="Rubik,Heebo,sans-serif" font-weight="800" font-size="26" fill="#14121F">${new Date().getFullYear()+1}</text></g><path class="nr-y nr-k nr-sp" style="stroke-width:2.2" d="M104,13 L106.7,19.3 L113,22 L106.7,24.7 L104,31 L101.3,24.7 L95,22 L101.3,19.3 Z"/><path class="nr-y nr-k nr-sp nr-sp2" style="stroke-width:2.2" d="M14,89 L16.1,93.9 L21,96 L16.1,98.1 L14,103 L11.9,98.1 L7,96 L11.9,93.9 Z"/></svg>
       <h2 class="dk-h" style="margin:14px 0 6px">לא נמצא החזר מס הפעם</h2>
       <p class="muted" style="margin:0">בדקנו את כל השנים האפשריות, ולא נמצא לך החזר עבורן.</p>
       <div class="nr-years">${[2020,2021,2022,2023,2024,2025].map(y=>`<span>${y} ✓</span>`).join('')}</div>
