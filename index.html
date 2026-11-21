@@ -523,6 +523,7 @@ const LOGIN_ERR = {
   limit:'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.',
   sms:'כניסה ב-SMS תיפתח בקרוב. בינתיים אפשר לבחור אימייל.',
   noemail:'אין לנו אימייל שמור עבורך. כתבו לנו בוואטסאפ ונעזור.',
+  blocked:'לא ניתן להיכנס לאזור האישי כרגע. לפרטים פנו אלינו בוואטסאפ.',
   busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
 };
 function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; CLIENT.years=c.years||null; CLIENT.refund=Number(c.refund)||0; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
