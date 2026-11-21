@@ -1067,7 +1067,7 @@ function stageJourney(){
   const got = S.stage==='refund' && CLIENT.refund;
   return `<section class="page-title"><h1>התהליך שלך</h1></section>
   ${got?`<section class="card" style="text-align:center"><div class="rf-amt" style="margin:4px auto"><small>${S.stage==='done'?'החזרנו לך':'סכום ההחזר הצפוי'}</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div></section>`:''}
-  ${S.stage==='done' ? doneRow() : `<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
+  ${S.stage==='done' ? doneRow()+nextStops() : `<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 /* ---------- render + events ---------- */
