@@ -886,7 +886,12 @@ function newCode(){ S.auth.code = String(Math.floor(100000+Math.random()*900000)
 /* ---------- plan footer (on every page) ---------- */
 const PLAN_FILE = `תוכנית כלכלית - ${CLIENT.name}.pdf`;
 function planFooter(){
-  if(S.stage) return '';
+  if(S.stage) return `<section class="rows plan-foot" id="plan-foot">
+    <div class="r" style="cursor:default">
+      <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
+      <span class="r-main"><b>התוכנית הכלכלית שלך</b><small>תהיה מוכנה כאן ברגע שהנתונים שלך יגיעו</small></span>
+    </div>
+  </section>`;
   return `<section class="rows plan-foot" id="plan-foot">
     <button class="r" data-act="open-plan">
       <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
