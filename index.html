@@ -56,8 +56,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @keyframes nrsp{0%,40%{opacity:0;transform:scale(.3)}55%{opacity:1;transform:scale(1)}80%,100%{opacity:0;transform:scale(.6)}}
 @media (prefers-reduced-motion:reduce){.nr-bob,.nr-sp{animation:none}}
 
-.rf-amt{margin:18px auto 8px;display:inline-flex;flex-direction:column;align-items:center;background:#F8D754;border-radius:20px;padding:14px 28px}
-.rf-amt small{font-size:13px;color:#5C4A08}.rf-amt b{font-family:Rubik,Heebo,sans-serif;font-weight:800;font-size:38px;line-height:1.1}
+.rf-amt{margin:16px auto 6px;display:inline-flex;flex-direction:column;align-items:center;background:#FFF8E1;border:1px solid #F3E3A8;border-radius:14px;padding:10px 24px}
+.rf-amt small{font-size:13px;color:#6B6B6B}.rf-amt b{font-family:Heebo,Arial,sans-serif;font-weight:700;font-size:26px;line-height:1.25;color:#222}
+.soft-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:10px 4px;font:500 15px Heebo,Arial,sans-serif;color:#222;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#C9B25A}
 
 .hello-total{margin-top:6px;font-size:15px;color:#3D3412}.hello-total b{font-weight:800}
 
@@ -1000,7 +1001,7 @@ function docsView(){
       <h2 class="dk-h" style="margin:4px 0 6px">נשאר לחתום על השומה</h2>
       <p class="muted" style="margin:0">שלחנו לך בוואטסאפ לינק לחתימה. ברגע שתחתום, ההחזר יוכל לצאת לדרך.</p>
       ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר שלך</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`:''}
-      <a class="dk-btn" style="margin-top:12px" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לא מצאת את הלינק? לוואטסאפ שלנו</a>
+      <div><a class="soft-link" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',16,2)} לא מצאת את הלינק? כתבו לנו בוואטסאפ</a></div>
     </div>`;
   else if(S.stage==='done') main=`
     <div class="nr-top">
