@@ -60,6 +60,13 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .rf-amt small{font-size:13px;color:#5C4A08}.rf-amt b{font-family:Rubik,Heebo,sans-serif;font-weight:800;font-size:38px;line-height:1.1}
 
 .hello-total{margin-top:6px;font-size:15px;color:#3D3412}.hello-total b{font-weight:800}
+
+.ns-list{display:flex;flex-direction:column;gap:10px}
+.ns-list button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff;text-align:right}
+.ns-list button>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}
+.ns-list b{font-size:16px}.ns-list small{color:#5B5870;font-size:13px}
+.ns-list .r-ic{background:#FDF3C9;color:#8A6D00;flex:none}
+.ns-list button>svg:last-child{color:#5B5870;flex:none}
 </style>
 <title>Bitax אזור אישי</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -947,6 +954,15 @@ function stageSteps(){
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
 function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
+function nextStops(){
+  return `<section class="card"><span class="label">התחנות הבאות שלך</span>
+    <h2 class="dk-h" style="font-size:20px;margin:6px 0 4px">בוא נעשה סדר גם בשאר הכסף שלך</h2>
+    <p class="muted" style="margin:0 0 12px">שני צעדים קצרים שיכולים לחסוך לך הרבה כסף לאורך השנים.</p>
+    <div class="ns-list">
+      <button data-go="insurance"><span class="r-ic">${icon('shield',22)}</span><span><b>סדר בתיק הביטוחי</b><small>נבדוק שאין לך כפל ביטוחים ושאתה לא משלם יותר מדי</small></span>${icon('chev',18)}</button>
+      <button data-go="pension"><span class="r-ic">${icon('growth',22)}</span><span><b>סדר בתיק הפנסיוני</b><small>נבדוק דמי ניהול, מסלולי השקעה וכספים שנשכחו</small></span>${icon('chev',18)}</button>
+    </div></section>`;
+}
 function docsView(){
   let hello = home().split('</section>')[0]+'</section>';
   if(S.stage==='done' && CLIENT.refund) hello = hello.replace('</h1>', `</h1><div class="hello-total">עד היום החזרנו לך <b dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`);
@@ -986,7 +1002,7 @@ function docsView(){
       <span class="label">התהליך הושלם</span>
       <h2 class="dk-h" style="margin:4px 0 6px">החזרנו לך כסף 🎉</h2>
       ${CLIENT.refund?`<div class="rf-amt"><small>סכום ההחזר שקיבלת</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`:''}
-      <p class="muted" style="margin:0">תודה שבחרת בנו. נבדוק אותך שוב בשנה הבאה, ובינתיים אנחנו כאן גם לביטוחים ולפנסיה שלך.</p>
+      <p class="muted" style="margin:0">תודה שבחרת בנו. נבדוק אותך שוב בשנה הבאה.</p>
     </div>`;
   else if(S.stage==='norefund') main=`
     <div class="nr-top">
@@ -1006,11 +1022,7 @@ function docsView(){
     <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לשירות לקוחות בוואטסאפ</a>
   </section>` : '';
   return hello+`<section class="card">${main}</section>${pay}
-  ${S.stage==='norefund'?`<section class="card"><span class="label">בינתיים, ממשיכים ללוות אותך</span>
-    <div class="nr-go">
-      <button data-go="insurance"><span class="r-ic">${icon('shield',22)}</span><b>הביטוחים שלך</b><small>מה יש לך ואיפה אפשר לחסוך</small></button>
-      <button data-go="pension"><span class="r-ic">${icon('growth',22)}</span><b>הפנסיה שלך</b><small>צבירות ודמי ניהול</small></button>
-    </div></section>`:`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
+  ${(S.stage==='norefund'||S.stage==='done')?nextStops()+`` :`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 
