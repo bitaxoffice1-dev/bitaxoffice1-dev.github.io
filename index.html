@@ -1054,11 +1054,20 @@ function pendingView(kind){
   </section>
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
+function doneRow(){
+  const amt = CLIENT.refund ? `<b class="num" dir="ltr" style="color:#1E6B3C;font-size:18px">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b>` : '';
+  return `<section class="card"><span class="label">ההחזרים שלך</span>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;padding:14px;border:1px solid #CFE9D7;background:#EEF8F1;border-radius:14px">
+      <span style="width:32px;height:32px;border-radius:50%;background:#1E6B3C;color:#fff;display:flex;align-items:center;justify-content:center;flex:none">${icon('check',16,2.8)}</span>
+      <span style="flex:1"><b style="font-weight:600">החזר מס</b><br><small style="color:#4A6B55">בוצע · הכסף הופקד לחשבון שלך</small></span>
+      ${amt}
+    </div></section>`;
+}
 function stageJourney(){
-  const got = (S.stage==='done'||S.stage==='refund') && CLIENT.refund;
+  const got = S.stage==='refund' && CLIENT.refund;
   return `<section class="page-title"><h1>התהליך שלך</h1></section>
   ${got?`<section class="card" style="text-align:center"><div class="rf-amt" style="margin:4px auto"><small>${S.stage==='done'?'החזרנו לך':'סכום ההחזר הצפוי'}</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div></section>`:''}
-  <section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>
+  ${S.stage==='done' ? doneRow() : `<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
   <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 /* ---------- render + events ---------- */
