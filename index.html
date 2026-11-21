@@ -950,7 +950,7 @@ function leadNote(action, extra){
 }
 
 
-const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה','אישור ניהול חשבון / צ׳ק מבוטל'];
+const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה / תעודת זהות הורה','אישור ניהול חשבון / צ׳ק מבוטל'];
 const STAGE_STEP={sign:0,docs:0,review:1,sent:2,assess:3,refund:3,done:4,norefund:4};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
