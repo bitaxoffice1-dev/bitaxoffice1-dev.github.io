@@ -983,11 +983,11 @@ function leadNote(action, extra){
 
 
 const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה / תעודת זהות הורה','אישור ניהול חשבון / צ׳ק מבוטל'];
-const STAGE_STEP={sign:0,docs:0,review:1,sent:2,calc:3,assess:3,refund:4,done:5,norefund:4};
+const STAGE_STEP={sign:0,docs:0,review:1,sent:2,calc:3,assess:4,refund:5,done:6,norefund:4};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר', S.stage==='done' ? 'ההחזר הופקד לחשבון שלך' : 'הכסף בדרך לחשבון הבנק שלך']];
-  const show = S.stage==='calc' ? [st[0],st[1],st[2],['בחישוב החזר','מס הכנסה מחשב את ההחזר שלך']] : S.stage==='assess' ? [st[0],st[1],st[2],['חתימה על השומה','שלחנו לך לינק לחתימה בוואטסאפ'],['הפקדת ההחזר','אחרי החתימה, הכסף יוצא לדרך']] : S.stage==='sign' ? [['חתימה על ההסכם','הסכם שירות וייפוי כוח']] : S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? [st[0],st[1],st[2],['חתימה על השומה','השומה נחתמה'],st[3]] : st.slice(0,3);
+  const show = S.stage==='calc' ? [st[0],st[1],st[2],['בחישוב החזר','מס הכנסה מחשב את ההחזר שלך']] : S.stage==='assess' ? [st[0],st[1],st[2],['בחישוב החזר','ההחזר חושב'],['חתימה על השומה','שלחנו לך לינק לחתימה בוואטסאפ'],['הפקדת ההחזר','אחרי החתימה, הכסף יוצא לדרך']] : S.stage==='sign' ? [['חתימה על ההסכם','הסכם שירות וייפוי כוח']] : S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? [st[0],st[1],st[2],['בחישוב החזר','ההחזר חושב'],['חתימה על השומה','השומה נחתמה'],st[3]] : st.slice(0,3);
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
 function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
