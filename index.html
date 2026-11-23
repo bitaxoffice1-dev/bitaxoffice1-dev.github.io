@@ -667,7 +667,7 @@ function home(){
 
 
 
-  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+  <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 
 const rowTag = key => { const it = SAVE_ITEMS.find(x=>x.key===key); if(!it) return ''; return S.done[key] ? `<span class="tag ok">בטיפול</span>` : `<span class="tag save">אפשר לחסוך</span>`; };
@@ -987,6 +987,19 @@ const STAGE_STEP={sign:0,docs:0,review:1,sent:2,calc:3,assess:4,refund:5,done:6,
 // וואטסאפ של ביטקס עם הודעה כתובה מראש (אפשר כמה שרוצים, לכל מסך הודעה משלו)
 const WA_NUM = '972533677600';
 const waText = msg => 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent(msg);
+// "יש שאלה?": הודעה לפי השלב שהלקוח רואה באזור האישי
+const ASK_MSG = {
+  sign:'היי, אני בשלב החתימה על ההסכם ויש לי שאלה',
+  docs:'היי, אני בשלב העלאת המסמכים ויש לי שאלה',
+  review:'היי, אני בשלב בדיקת המסמכים ויש לי שאלה',
+  sent:'היי, אני בשלב הטיפול בתיק ויש לי שאלה',
+  calc:'היי, אני בשלב חישוב ההחזר ויש לי שאלה',
+  assess:'היי, אני בשלב החתימה על השומה ויש לי שאלה',
+  refund:'היי, אני מחכה להפקדת ההחזר ויש לי שאלה',
+  done:'היי, התהליך שלי הסתיים ויש לי שאלה',
+  norefund:'היי, ראיתי שלא נמצא לי החזר ויש לי שאלה'
+};
+const waAsk = () => waText(ASK_MSG[S.stage] || 'היי, יש לי שאלה על האזור האישי');
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר', S.stage==='done' ? 'ההחזר הופקד לחשבון שלך' : 'הכסף בדרך לחשבון הבנק שלך']];
@@ -1067,7 +1080,7 @@ function docsView(){
   return hello+`<section class="card">${main}</section>${pay}
   ${SLIP_ON?slipCard():''}
   ${(S.stage==='norefund'||S.stage==='done')?nextStops()+`` :`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
-  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+  <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 
 /* ---------- בדיקת תלוש שכר (הדגמה) ---------- */
@@ -1130,7 +1143,7 @@ function pendingView(kind){
     <h2 class="dk-h" style="font-size:21px">${T.h}</h2>
     <p class="muted" style="margin:0">${T.p}</p>${btn}
   </section>
-  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+  <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 function doneRow(){
   const amt = CLIENT.refund ? `<b class="num" dir="ltr" style="color:#1E6B3C;font-size:18px">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b>` : '';
@@ -1155,7 +1168,7 @@ function stageJourney(){
   return `<section class="page-title"><h1>התהליך שלך</h1></section>
   ${got?`<section class="card" style="text-align:center"><div class="rf-amt" style="margin:4px auto"><small>${S.stage==='done'?'החזרנו לך':'סכום ההחזר הצפוי'}</small><b class="num" dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div></section>`:''}
   ${S.stage==='done' ? doneRow()+nextStops() : S.stage==='norefund' ? noRefRow()+nextStops() : `<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
-  <div class="ask">יש שאלה? <a class="wa" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
+  <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 /* ---------- render + events ---------- */
 const A11Y_FOOT = `<p class="a11y-foot"><a href="https://bitax.co.il/access/" target="_blank" rel="noopener">הצהרת נגישות</a></p>`;
