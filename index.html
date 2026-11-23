@@ -889,7 +889,7 @@ function loginView(){
       <input class="field" id="lg-id" inputmode="numeric" autocomplete="off" maxlength="9" placeholder="9 ספרות" value="${A.id}" style="text-align:right">
       <label class="label" for="lg-to">${A.how==='sms'?'טלפון':'כתובת אימייל'}</label>
       <input class="field" id="lg-to" ${A.how==='sms'?'type="tel" inputmode="tel" autocomplete="tel" placeholder="טלפון"':'type="email" inputmode="email" autocomplete="email" placeholder="אימייל"'} value="${A.to}" style="direction:ltr;text-align:right">
-      <div class="err" role="alert">${A.err}</div>
+      <div class="err" role="alert">${A.err}${A.err===LOGIN_ERR.blocked?` <a href="${waText('היי, ניסיתי להיכנס לאזור האישי ולא הצלחתי')}" target="_blank" rel="noopener" style="color:inherit;font-weight:700;text-decoration:underline">לוואטסאפ שלנו</a>`:''}</div>
       <button class="btn btn-brand" type="submit">שלחו לי קוד ${icon('arrow',18,2.4)}</button>
     </form>
     </div>
@@ -905,7 +905,7 @@ function loginView(){
       ${A.server?'':`<div class="hint">גרסת ניסיון: הקוד שלך הוא <b class="num" style="letter-spacing:3px">${A.code}</b></div>`}
       <label class="label" for="lg-otp">קוד אימות</label>
       <input class="field otp" id="lg-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="------">
-      <div class="err" role="alert">${A.err}</div>
+      <div class="err" role="alert">${A.err}${A.err===LOGIN_ERR.blocked?` <a href="${waText('היי, ניסיתי להיכנס לאזור האישי ולא הצלחתי')}" target="_blank" rel="noopener" style="color:inherit;font-weight:700;text-decoration:underline">לוואטסאפ שלנו</a>`:''}</div>
       <button class="btn btn-brand" type="submit">כניסה</button>
       <button type="button" class="link-btn" data-act="lg-resend" style="align-self:center">לא הגיע קוד? שליחה מחדש</button>
     </form></div></div>`;
