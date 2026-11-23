@@ -560,7 +560,7 @@ const escH = s => String(s==null?'':s).replace(/[&<>"'`]/g, ch => ({'&':'&amp;',
 const safeUrl = u => /^https:\/\/[^\s"'<>`]+$/i.test(String(u||'')) ? String(u) : '';
 function applyClient(c){ if(!c) return; const nm=escH(c.name); CLIENT.name=nm||CLIENT.name; NAME=nm.split(' ')[0]||NAME; CLIENT.upload=safeUrl(c.upload); CLIENT.pay=!!c.pay; CLIENT.years=(Array.isArray(c.years)&&c.years.length===2)?c.years.map(Number):null; CLIENT.refund=Number(c.refund)||0; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
-{ const m=location.search.match(/[?&]demo=(full|sign|docs|review|sent|assess|norefund|refund|done)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(/^(refund|done|assess)$/.test(m[1])) CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
+{ const m=location.search.match(/[?&]demo=(full|sign|docs|review|sent|calc|assess|norefund|refund|done)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(/^(refund|done|assess)$/.test(m[1])) CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
 const left = kind => SAVE_ITEMS.filter(x=>!S.done[x.key] && (!kind || x.kind===kind));
 const sum = list => list.reduce((a,x)=>a+x.v,0);
@@ -983,11 +983,11 @@ function leadNote(action, extra){
 
 
 const DOC_KIT=['תעודת זהות – צד קדמי','תעודת זהות – צד אחורי','תעודה מזהה נוספת – דרכון / רישיון נהיגה / תעודת זהות הורה','אישור ניהול חשבון / צ׳ק מבוטל'];
-const STAGE_STEP={sign:0,docs:0,review:1,sent:2,assess:3,refund:4,done:5,norefund:4};
+const STAGE_STEP={sign:0,docs:0,review:1,sent:2,calc:3,assess:3,refund:4,done:5,norefund:4};
 function stageSteps(){
   const cur=STAGE_STEP[S.stage]||0;
   const st=[['העלאת מסמכים','צילום ברור מהטלפון מספיק'],['בדיקת מסמכים','מוודאים שהמסמכים תקינים'],['טיפול בתיק','התיק בטיפול הצוות שלנו'],['הפקדת ההחזר', S.stage==='done' ? 'ההחזר הופקד לחשבון שלך' : 'הכסף בדרך לחשבון הבנק שלך']];
-  const show = S.stage==='assess' ? [st[0],st[1],st[2],['חתימה על השומה','שלחנו לך לינק לחתימה בוואטסאפ'],['הפקדת ההחזר','אחרי החתימה, הכסף יוצא לדרך']] : S.stage==='sign' ? [['חתימה על ההסכם','הסכם שירות וייפוי כוח']] : S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? [st[0],st[1],st[2],['חתימה על השומה','השומה נחתמה'],st[3]] : st.slice(0,3);
+  const show = S.stage==='calc' ? [st[0],st[1],st[2],['בחישוב החזר','מס הכנסה מחשב את ההחזר שלך']] : S.stage==='assess' ? [st[0],st[1],st[2],['חתימה על השומה','שלחנו לך לינק לחתימה בוואטסאפ'],['הפקדת ההחזר','אחרי החתימה, הכסף יוצא לדרך']] : S.stage==='sign' ? [['חתימה על ההסכם','הסכם שירות וייפוי כוח']] : S.stage==='docs' ? st.slice(0,1) : S.stage==='review' ? st.slice(0,2) : (S.stage==='refund'||S.stage==='done') ? [st[0],st[1],st[2],['חתימה על השומה','השומה נחתמה'],st[3]] : st.slice(0,3);
   return `<div class="dk-steps" style="margin-top:12px">${show.map((x,i)=>`<div class="${i<cur?'done':i===cur?'now':''}"><b class="n">${i<cur?icon('check',14,2.8):i+1}</b><span><b style="font-weight:600">${x[0]}</b><br><small class="muted">${x[1]}</small></span></div>`).join('')}</div>`;
 }
 function nrYears(){ const r=CLIENT.years||[2020,2025]; const o=[]; for(let y=r[0];y<=r[1];y++) o.push(y); return o; }
@@ -1049,6 +1049,9 @@ function docsView(){
       <div class="nr-years">${nrYears().map(y=>`<span>${y} ✓</span>`).join('')}</div>
       <div class="nr-next">👋 נבדוק שוב בשנה הבאה ונעדכן</div>
     </div>`;
+  else if(S.stage==='calc') main=`
+    <h2 class="dk-h">בחישוב החזר</h2>
+    <p class="muted" style="margin:0">מס הכנסה מחשב את ההחזר שלך. השלב הזה יכול לקחת קצת זמן, ואנחנו בקשר איתם ונעדכן ברגע שיש תשובה.</p>`;
   else main=`
     <h2 class="dk-h">התיק שלך בטיפול</h2>
     <p class="muted" style="margin:0">המסמכים שלך תקינים והתיק עבר לשלב הטיפול.</p>`;
@@ -1116,7 +1119,7 @@ function pendingView(kind){
     review: { h:'המסמכים בבדיקה',    p:'קיבלנו את המסמכים ואנחנו בודקים אותם. מיד אחרי הבדיקה נתחיל לאסוף את הנתונים שלך.' },
     sent:   { h:'בתהליך קליטה',      p: ins ? 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן מה יש לך, כמה זה עולה ואיפה אפשר לחסוך.'
                                             : 'הנתונים שלך בדרך אלינו. ברגע שיגיעו, תראה כאן כמה צברת, מה דמי הניהול ומה כדאי לבדוק.' }
-  }[(S.stage==='norefund'||S.stage==='refund'||S.stage==='done'||S.stage==='assess')?'sent':S.stage] || { h:'בתהליך קליטה', p:'' };
+  }[(S.stage==='norefund'||S.stage==='refund'||S.stage==='done'||S.stage==='assess'||S.stage==='calc')?'sent':S.stage] || { h:'בתהליך קליטה', p:'' };
   const btn = S.stage==='docs' ? `<a class="dk-btn" style="margin-top:16px" ${CLIENT.upload?`href="${CLIENT.upload}" target="_blank" rel="noopener"`:'href="#" data-act="dk-demo"'}>${icon('upload',20,2.2)} להעלאת המסמכים</a>` : '';
   return `<section class="page-title"><h1>${t}</h1></section>
   <section class="card" style="text-align:center;padding:34px 20px">
