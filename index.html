@@ -914,11 +914,14 @@ function newCode(){ S.auth.code = String(Math.floor(100000+Math.random()*900000)
 
 /* ---------- plan footer (on every page) ---------- */
 const PLAN_FILE = `תוכנית כלכלית - ${CLIENT.name}.pdf`;
+// התוכנית הכלכלית ב"בקרוב" עד החיבור לרואטו. להחזיר: false
+const PLAN_SOON = true;
 function planFooter(){
   if(S.stage) return `<section class="rows plan-foot" id="plan-foot">
     <div class="r" style="cursor:default">
       <span class="r-ic" style="background:var(--brand-soft);color:var(--amber)">${icon('gift',20)}</span>
       <span class="r-main"><b>התוכנית הכלכלית שלך</b><small>תהיה מוכנה כאן ברגע שהנתונים שלך יגיעו</small></span>
+      ${PLAN_SOON?'<small class="soon-pill">בקרוב</small>':''}
     </div>
   </section>`;
   return `<section class="rows plan-foot" id="plan-foot">
