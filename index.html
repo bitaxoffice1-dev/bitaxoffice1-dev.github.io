@@ -546,7 +546,10 @@ const LOGIN_ERR = {
   blocked:'לא ניתן להיכנס לאזור האישי כרגע. לפרטים פנו אלינו בוואטסאפ.',
   busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
 };
-function applyClient(c){ if(!c) return; CLIENT.name=c.name||CLIENT.name; NAME=String(c.name||'').split(' ')[0]||NAME; CLIENT.upload=c.upload||''; CLIENT.pay=!!c.pay; CLIENT.years=c.years||null; CLIENT.refund=Number(c.refund)||0; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
+// כל מה שמגיע ממאנדיי מוצג כטקסט בלבד, לא כקוד
+const escH = s => String(s==null?'':s).replace(/[&<>"'`]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[ch]));
+const safeUrl = u => /^https:\/\/[^\s"'<>`]+$/i.test(String(u||'')) ? String(u) : '';
+function applyClient(c){ if(!c) return; const nm=escH(c.name); CLIENT.name=nm||CLIENT.name; NAME=nm.split(' ')[0]||NAME; CLIENT.upload=safeUrl(c.upload); CLIENT.pay=!!c.pay; CLIENT.years=(Array.isArray(c.years)&&c.years.length===2)?c.years.map(Number):null; CLIENT.refund=Number(c.refund)||0; if(!/[?&]demo=/.test(location.search)) S.stage=c.stage==='data'?null:c.stage; }
 // דמו בלי מאנדיי: ?demo=full (כל הנתונים) או ?demo=docs|review|sent. לא נשמר במכשיר
 { const m=location.search.match(/[?&]demo=(full|sign|docs|review|sent|assess|norefund|refund|done)\b/); if(m){ S.session={id:CLIENT.id, demo:true, at:new Date().toISOString()}; S.stage = m[1]==='full' ? null : m[1]; CLIENT.pay=/[?&]pay=1\b/.test(location.search); if(/^(refund|done|assess)$/.test(m[1])) CLIENT.refund=4870; S.mkt = S.mkt || true; } else if(S.session && S.session.client) applyClient(S.session.client); }
 
