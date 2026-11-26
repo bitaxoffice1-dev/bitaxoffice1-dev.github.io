@@ -884,7 +884,7 @@ function sendPlanMail(to){
   render();
   if(!MAIL_API){ toast('מעולה! התוכנית בדרך אליך'); return; }
   toast('שולחים את התוכנית…');
-  api({type:'plan', to, name:CLIENT.name, id:(S.session||{}).id||''})
+  api({type:'plan', to, name:CLIENT.name, id:(S.session||{}).id||'', sess:(S.session||{}).tok||''})
     .then(r=>{ if(r && r.err==='limit'){ openPlanLimit(); return; } toast(r.ok?'נשלח! התוכנית מחכה לך במייל':'לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'); })
     .catch(()=>toast('לא הצלחנו לשלוח כרגע. נציג ישלח לך אותה בהקדם'));
 }
