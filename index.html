@@ -643,7 +643,8 @@ const SOON_TABS = ['insurance','pension'];
 const isSoon = v => SOON_TABS.indexOf(v) >= 0;
 const isTab = v => TABS.some(t=>t[0]===v) && !isSoon(v);
 const isSave = v => v==='save' || /^save-(p|f)\d$/.test(v);
-const SLIP_ON = /[?&]slip=1\b/.test(location.search); // בדיקת תלוש: בינתיים רק בהדגמה
+const SLIP_ON = true; // בדיקת תלוש שכר: פתוח לכל הלקוחות, התלוש נשלח למשרד
+const SLIP_DEMO = /[?&]slip=1\b/.test(location.search); // הדגמת התוצאה האוטומטית (נתוני דמה)
 const LOAN_ON = true; // בדיקת זכאות להלוואה: פתוח לכל הלקוחות
 const valid = v => isTab(v) || isSave(v) || (SLIP_ON && v==='payslip') || (LOAN_ON && v==='loan');
 let depth=0;
@@ -1101,7 +1102,7 @@ function docsView(){
     <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לשירות לקוחות בוואטסאפ</a>
   </section>` : '';
   return hello+`<section class="card">${main}</section>${pay}
-  ${SLIP_ON?slipCard():''}
+  ${SLIP_DEMO?slipCard():''}
   ${(S.stage==='norefund'||S.stage==='done')?nextStops()+`` :`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
   <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
@@ -1176,14 +1177,20 @@ function slipView(){
   if(st==='up') return head+`<section class="card" style="text-align:center;padding:30px 20px">
       <div class="slip-ic" style="margin:0 auto 14px;width:64px;height:64px;border-radius:20px">${icon('upload',28,2)}</div>
       <h2 class="dk-h" style="font-size:22px">מה באמת קורה בתלוש שלך?</h2>
-      <p class="muted" style="margin:0 0 18px">מצלמים או מעלים את התלוש האחרון, ותוך דקה תראה כאן מה תקין, מה כדאי לבדוק ואם אולי מגיע לך כסף.</p>
+      <p class="muted" style="margin:0 0 18px">${SLIP_DEMO?'מצלמים או מעלים את התלוש האחרון, ותוך דקה תראה כאן מה תקין, מה כדאי לבדוק ואם אולי מגיע לך כסף.':'מצלמים או מעלים את התלוש האחרון, והצוות שלנו יבדוק מה תקין, מה כדאי לבדוק ואם אולי מגיע לך כסף.'}</p>
+      ${S.slipErr?`<p class="lq-err" role="alert" style="margin:0 0 14px">${S.slipErr}</p>`:''}
       <label class="dk-btn" style="cursor:pointer">${icon('upload',20,2.2)} לצילום או העלאת התלוש<input id="slip-file" type="file" accept="image/*,application/pdf" hidden></label>
       <p class="muted" style="font-size:13px;margin:14px 0 0">התלוש נשמר אצלנו בצורה מאובטחת, רק בשביל הבדיקה שלך.</p>
     </section>`;
   if(st==='wait') return head+`<section class="card" style="text-align:center;padding:36px 20px">
       <div class="slip-spin"></div>
-      <h2 class="dk-h" style="font-size:20px">בודקים את התלוש שלך</h2>
-      <p class="muted" style="margin:0">קוראים את הנתונים ומשווים לחוק ולשיעורים העדכניים...</p></section>`;
+      <h2 class="dk-h" style="font-size:20px">${SLIP_DEMO?'בודקים את התלוש שלך':'שולחים את התלוש…'}</h2>
+      <p class="muted" style="margin:0">${SLIP_DEMO?'קוראים את הנתונים ומשווים לחוק ולשיעורים העדכניים...':'זה לוקח כמה שניות. לא לסגור את הדף.'}</p></section>`;
+  if(st==='sent') return head+`<section class="card" style="text-align:center;padding:34px 20px">
+      <div class="slip-ic" style="margin:0 auto 14px;width:64px;height:64px;border-radius:50%;background:#EEF8F1;color:#1E6B3C">${icon('check',28,2.6)}</div>
+      <h2 class="dk-h" style="font-size:22px">התלוש אצלנו, תודה</h2>
+      <p class="muted" style="margin:0 0 6px">הצוות שלנו יבדוק אותו ויחזור אליך עם התוצאות.</p>
+      <button class="soft-link" data-act="slip-again" style="background:none;border:0;cursor:pointer">לשליחת תלוש נוסף</button></section>`;
   const ok=[['ביטוח לאומי ומס בריאות','מחושבים נכון'],['קרן השתלמות','המעסיק מפקיד בשבילך 825 ₪ בחודש, פי שלושה ממה שיורד לך'],['חופשה ומחלה','נצברים כמו שצריך'],['מס הכנסה','החודש לא שילמת בכלל, בזכות הטבת המס של היישוב שלך']];
   const warn=[['פנסיה','אין בתלוש הפקדה לפנסיה. כלומר אין חיסכון לפרישה ואין ביטוח אם חלילה לא תוכל לעבוד'],['מס הכנסה מתחילת השנה','ירדו לך כ־2,082 ₪. ייתכן שמגיע לך את זה בחזרה'],['דמי הבראה','מהשנה השנייה בעבודה מגיעים לך, והם לא מופיעים בתלוש']];
   const li=(a,ic)=>a.map(x=>`<li><span class="dot">${ic}</span><span><b style="font-weight:600">${x[0]}</b><small>${x[1]}</small></span></li>`).join('');
@@ -1200,7 +1207,33 @@ function slipView(){
     <p class="muted" style="font-size:12px;text-align:center;margin:4px 12px 0">הבדיקה אוטומטית ונותנת תמונה ראשונית. לבדיקה מלאה דברו איתנו.</p>
     <div style="text-align:center"><button class="soft-link" data-act="slip-again" style="background:none;border:0;cursor:pointer">לבדיקת תלוש נוסף</button></div>`;
 }
-document.addEventListener('change',e=>{ if(e.target.id==='slip-file' && e.target.files[0]){ S.slip='wait'; render(); window.scrollTo({top:0}); setTimeout(()=>{ S.slip='res'; render(); window.scrollTo({top:0}); }, 2600); } });
+// תמונה מוקטנת ל-JPEG (עד 2000px), PDF כמו שהוא (עד 5MB). מחזיר {mime,data(base64)}
+function slipPrep(file){
+  return new Promise((res,rej)=>{
+    if(file.type==='application/pdf'){
+      if(file.size>5*1024*1024) return rej('big');
+      const fr=new FileReader(); fr.onload=()=>res({mime:'application/pdf',data:String(fr.result).split(',')[1]||''}); fr.onerror=()=>rej('read'); fr.readAsDataURL(file); return;
+    }
+    if(!/^image\//.test(file.type)) return rej('type');
+    const url=URL.createObjectURL(file); const img=new Image();
+    img.onload=()=>{ try{ const k=Math.min(1,2000/Math.max(img.naturalWidth,img.naturalHeight)); const c=document.createElement('canvas'); c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
+      const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      res({mime:'image/jpeg',data:c.toDataURL('image/jpeg',0.85).split(',')[1]||''}); }catch(_){ rej('read'); } };
+    img.onerror=()=>{ URL.revokeObjectURL(url); rej('type'); }; img.src=url;
+  });
+}
+const SLIP_ERR={big:'הקובץ גדול מדי. אפשר להעלות PDF עד 5MB, או לצלם את התלוש.', type:'אפשר להעלות תמונה או קובץ PDF בלבד.', read:'לא הצלחנו לקרוא את הקובץ. אפשר לנסות שוב או לצלם את התלוש.', auth:'כדי לשלוח צריך להתחבר מחדש: לחצו "יציאה" והיכנסו שוב עם קוד.', limit:'כבר קיבלנו ממך כמה תלושים היום. נציג יחזור אליך בקרוב.', file:'הקובץ לא נקלט. אפשר להעלות תמונה או PDF.', net:'לא הצלחנו לשלוח כרגע. אפשר לנסות שוב בעוד כמה דקות.'};
+document.addEventListener('change',e=>{
+  if(e.target.id!=='slip-file' || !e.target.files[0]) return;
+  const go=(st,err)=>{ S.slip=st; S.slipErr=err||''; render(); window.scrollTo({top:0}); };
+  if(SLIP_DEMO){ go('wait'); setTimeout(()=>go('res'), 2600); return; }
+  const file=e.target.files[0]; const ss=S.session||{};
+  go('wait');
+  slipPrep(file).then(f=>{
+    if(ss.demo || !ss.id){ setTimeout(()=>go('sent'), 1200); return; }      // מצב הדגמה: לא נשלח
+    return api({type:'slip', id:ss.id, sess:ss.tok||'', mime:f.mime, data:f.data}).then(r=> r.ok ? go('sent') : go('up', SLIP_ERR[r.err]||SLIP_ERR.net));
+  }).catch(err=>go('up', SLIP_ERR[err]||SLIP_ERR.net));
+});
 document.addEventListener('click',e=>{ if(e.target.closest('[data-act="slip-again"]')){ S.slip='up'; render(); window.scrollTo({top:0}); } });
 
 /* ביטוחים / פנסיה / התהליך לפני שהנתונים הגיעו */
@@ -1371,8 +1404,9 @@ function closeMenu(){ const w=document.getElementById('menu-wrap'); if(w){ w.rem
 function openMenu(){
   if(document.getElementById('menu-wrap')) return;
   const w=document.createElement('div'); w.id='menu-wrap'; w.className='menu-wrap';
+  const slipItem = SLIP_ON ? `<button class="menu-item" data-go="payslip"><span class="r-ic">${icon('upload',20)}</span><span class="t">בדיקת תלוש שכר</span>${icon('chev',18)}</button>` : '';
   const loanItem = LOAN_ON ? `<button class="menu-item" data-go="loan"><span class="r-ic">${icon('coins',20)}</span><span class="t">בדיקת זכאות להלוואה</span>${icon('chev',18)}</button>` : '';
-  const items=loanItem+TABS.filter(t=>isSoon(t[0])).map(t=>`<button class="menu-item" disabled aria-disabled="true"><span class="r-ic">${icon(t[2],20)}</span><span class="t">${t[1]}</span><small class="soon-pill">בקרוב</small></button>`).join('');
+  const items=loanItem+slipItem+TABS.filter(t=>isSoon(t[0])).map(t=>`<button class="menu-item" disabled aria-disabled="true"><span class="r-ic">${icon(t[2],20)}</span><span class="t">${t[1]}</span><small class="soon-pill">בקרוב</small></button>`).join('');
   w.innerHTML=`<div class="menu-panel" role="dialog" aria-modal="true" aria-label="תפריט">
     <div class="menu-head"><b>עוד באזור האישי</b><button class="menu-x" data-act="menu-x" aria-label="סגירת התפריט">${icon('x',20,2.2)}</button></div>${items}</div>`;
   document.body.appendChild(w); const x=w.querySelector('.menu-x'); if(x) x.focus();
