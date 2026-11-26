@@ -84,6 +84,16 @@ button.soon{cursor:default;opacity:.75}
 .menu-item .r-ic{width:40px;height:40px;border-radius:12px;background:#FFF5D9;display:flex;align-items:center;justify-content:center;flex:none}
 .menu-item span.t{flex:1;font-weight:600}
 .menu-item[disabled]{opacity:.8;cursor:default}
+.lq{border:0;padding:0;margin:0 0 22px;min-width:0}
+.lq legend,.lq>label.lq-l{display:block;font-weight:600;font-size:17px;margin:0 0 10px;padding:0}
+.lq-opts{display:flex;flex-wrap:wrap;gap:8px}
+.lq-opt{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:16px;cursor:pointer}
+.lq-opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.lq-opt.on{background:#14121F;color:#fff;border-color:#14121F}
+.lq-opt:focus-within{outline:2px solid #F6D46A;outline-offset:2px}
+.lq-num{position:relative}.lq-num .field{padding-left:52px;direction:ltr;text-align:right}
+.lq-num span{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.lq-err{color:#B3261E;font-size:14px;margin:0 0 12px}
 .a11y-foot{text-align:center;margin:18px 0 4px;font-size:13px}
 .a11y-foot a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 .to-wrap{position:fixed;inset:0;z-index:50;background:rgba(20,18,31,.45);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -634,7 +644,8 @@ const isSoon = v => SOON_TABS.indexOf(v) >= 0;
 const isTab = v => TABS.some(t=>t[0]===v) && !isSoon(v);
 const isSave = v => v==='save' || /^save-(p|f)\d$/.test(v);
 const SLIP_ON = /[?&]slip=1\b/.test(location.search); // בדיקת תלוש: בינתיים רק בהדגמה
-const valid = v => isTab(v) || isSave(v) || (SLIP_ON && v==='payslip');
+const LOAN_ON = /[?&]loan=1\b/.test(location.search); // בדיקת זכאות להלוואה: בינתיים רק בהדגמה
+const valid = v => isTab(v) || isSave(v) || (SLIP_ON && v==='payslip') || (LOAN_ON && v==='loan');
 let depth=0;
 function go(v){ if(v===S.view) return; depth++; try{ location.hash=v; }catch(_){ show(v); } }
 function show(v){ S.view = valid(v)?v:'home'; S.success=null; render(); window.scrollTo({top:0}); }
@@ -1095,6 +1106,54 @@ function docsView(){
   <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
 }
 
+/* ---------- בדיקת זכאות להלוואה (הדגמה) ---------- */
+const LOAN_Q = [
+  {k:'amt', q:'מה סכום ההלוואה המבוקש?', o:['עד 20 אלף ₪','20–100 אלף ₪','100 אלף ₪ ומעלה']},
+  {k:'purpose', q:'מה מטרת ההלוואה?', o:['סגירת חובות','רכב','שיפוץ','אחר']},
+  {k:'pay', q:'מה ההחזר החודשי המקסימלי שתוכל/י לעמוד בו?', n:1},
+  {k:'salary', q:'מה המשכורת ברוטו הממוצעת בשלושת החודשים האחרונים?', n:1},
+  {k:'fund', q:'יש לך קופת פנסיה / גמל / קרן השתלמות מעל 50 אלף ₪?', o:['כן','לא']},
+  {k:'car', q:'יש בבעלותך רכב משנת 2014 ומעלה?', o:['כן','לא']},
+  {k:'asset', q:'יש נכס בבעלותך (דירה / קרקע)?', o:['כן','לא']},
+  {k:'mort', q:'יש על הנכס משכנתא?', o:['כן','לא'], dep:'asset'},
+  {k:'credit', q:'בשנה האחרונה היו לך צ׳קים שחזרו, הגבלה בחשבון או תיק בהוצאה לפועל?', o:['כן','לא']}
+];
+function loanView(){
+  const head = `<section class="page-title"><h1>בדיקת זכאות להלוואה</h1></section>`;
+  if(S.loanDone) return head+`<section class="card" style="text-align:center;padding:34px 20px">
+      <div class="slip-ic" style="margin:0 auto 14px;width:64px;height:64px;border-radius:50%;background:#EEF8F1;color:#1E6B3C">${icon('check',28,2.6)}</div>
+      <h2 class="dk-h" style="font-size:22px">קיבלנו, תודה</h2>
+      <p class="muted" style="margin:0">הפרטים הועברו לצוות שלנו. נציג יחזור אליך עם תשובה ראשונית.</p></section>`;
+  const qs = LOAN_Q.map(x=>{
+    if(x.n) return `<div class="lq"><label class="lq-l" for="lq-${x.k}">${x.q}</label><div class="lq-num"><input class="field" id="lq-${x.k}" name="${x.k}" inputmode="numeric" autocomplete="off" maxlength="9" placeholder="0"><span aria-hidden="true">₪</span></div></div>`;
+    return `<fieldset class="lq" data-q="${x.k}" ${x.dep?'hidden':''}><legend>${x.q}</legend><div class="lq-opts">${x.o.map(o=>`<label class="lq-opt"><input type="radio" name="${x.k}" value="${o}">${o}</label>`).join('')}</div></fieldset>`;
+  }).join('');
+  return head+`<section class="card"><h2 class="dk-h" style="font-size:22px;margin:0 0 6px">כמה שאלות קצרות</h2>
+      <p class="muted" style="margin:0 0 22px">זו בדיקה ראשונית בלבד. אחרי השליחה נציג יחזור אליך.</p>
+      <form id="loan-form" novalidate>${qs}
+        <p class="lq-err" id="loan-err" role="alert" hidden>נשארו שאלות בלי תשובה.</p>
+        <button class="dk-btn" type="submit" style="width:100%">${icon('mail',20,2.2)} לשליחה לבדיקה</button>
+      </form></section>`;
+}
+document.addEventListener('change',e=>{
+  const r=e.target; if(!r.closest || !r.closest('#loan-form') || r.type!=='radio') return;
+  r.closest('.lq-opts').querySelectorAll('.lq-opt').forEach(l=>l.classList.toggle('on', l.querySelector('input').checked));
+  if(r.name==='asset'){ const m=document.querySelector('[data-q="mort"]'); if(m){ m.hidden = r.value!=='כן'; if(m.hidden) m.querySelectorAll('input').forEach(i=>{i.checked=false;i.closest('.lq-opt').classList.remove('on');}); } }
+});
+document.addEventListener('input',e=>{ if(e.target.closest && e.target.closest('.lq-num')){ const d=e.target.value.replace(/\D/g,''); e.target.value = d ? Number(d).toLocaleString('en-US') : ''; } });
+document.addEventListener('submit',e=>{
+  if(e.target.id!=='loan-form') return; e.preventDefault();
+  const f=e.target, ans={}; let ok=true;
+  LOAN_Q.forEach(x=>{
+    if(x.dep && (f.querySelector('[data-q="'+x.k+'"]')||{}).hidden) return;
+    const v = x.n ? f.elements[x.k].value.trim() : ((f.querySelector('input[name="'+x.k+'"]:checked')||{}).value||'');
+    if(!v) ok=false; ans[x.k]=v;
+  });
+  document.getElementById('loan-err').hidden = ok;
+  if(!ok) return;
+  S.loanAns=ans; S.loanDone=true; render(); window.scrollTo({top:0});   // הדגמה: עוד לא נשלח מייל
+});
+
 /* ---------- בדיקת תלוש שכר (הדגמה) ---------- */
 function slipCard(){
   return `<section class="card"><button class="slip-card" data-go="payslip" style="background:none;border:0;padding:0">
@@ -1187,7 +1246,7 @@ const A11Y_FOOT = `<p class="a11y-foot"><a href="https://bitax.co.il/access/" ta
 function render(){
   if(!S.session){ document.getElementById('app').innerHTML = loginView() + A11Y_FOOT; return; }
   const firstHome = !S.rolled && S.view==='home';
-  const v = (SLIP_ON && S.view==='payslip') ? slipView : S.stage ? (S.view==='insurance' ? ()=>pendingView('ins') : S.view==='pension' ? ()=>pendingView('pen') : S.view==='journey' ? stageJourney : docsView) : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
+  const v = (LOAN_ON && S.view==='loan') ? loanView : (SLIP_ON && S.view==='payslip') ? slipView : S.stage ? (S.view==='insurance' ? ()=>pendingView('ins') : S.view==='pension' ? ()=>pendingView('pen') : S.view==='journey' ? stageJourney : docsView) : isSave(S.view) ? saveView : {home,insurance,pension,journey}[S.view];
   document.getElementById('app').innerHTML = shell(v());
   if(firstHome) S.rolled = true;
 }
@@ -1303,14 +1362,15 @@ function closeMenu(){ const w=document.getElementById('menu-wrap'); if(w){ w.rem
 function openMenu(){
   if(document.getElementById('menu-wrap')) return;
   const w=document.createElement('div'); w.id='menu-wrap'; w.className='menu-wrap';
-  const items=TABS.filter(t=>isSoon(t[0])).map(t=>`<button class="menu-item" disabled aria-disabled="true"><span class="r-ic">${icon(t[2],20)}</span><span class="t">${t[1]}</span><small class="soon-pill">בקרוב</small></button>`).join('');
+  const loanItem = LOAN_ON ? `<button class="menu-item" data-go="loan"><span class="r-ic">${icon('coins',20)}</span><span class="t">בדיקת זכאות להלוואה</span>${icon('chev',18)}</button>` : '';
+  const items=loanItem+TABS.filter(t=>isSoon(t[0])).map(t=>`<button class="menu-item" disabled aria-disabled="true"><span class="r-ic">${icon(t[2],20)}</span><span class="t">${t[1]}</span><small class="soon-pill">בקרוב</small></button>`).join('');
   w.innerHTML=`<div class="menu-panel" role="dialog" aria-modal="true" aria-label="תפריט">
     <div class="menu-head"><b>עוד באזור האישי</b><button class="menu-x" data-act="menu-x" aria-label="סגירת התפריט">${icon('x',20,2.2)}</button></div>${items}</div>`;
   document.body.appendChild(w); const x=w.querySelector('.menu-x'); if(x) x.focus();
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="menu"]')){ openMenu(); return; }
-  if(e.target.closest('[data-act="menu-x"]') || e.target.id==='menu-wrap'){ closeMenu(); return; }
+  if(e.target.closest('[data-act="menu-x"]') || e.target.id==='menu-wrap' || e.target.closest('#menu-wrap [data-go]')){ closeMenu(); return; }
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
 function checkExpiry(){
