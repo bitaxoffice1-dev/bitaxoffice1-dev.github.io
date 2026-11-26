@@ -644,7 +644,7 @@ const isSoon = v => SOON_TABS.indexOf(v) >= 0;
 const isTab = v => TABS.some(t=>t[0]===v) && !isSoon(v);
 const isSave = v => v==='save' || /^save-(p|f)\d$/.test(v);
 const SLIP_ON = /[?&]slip=1\b/.test(location.search); // בדיקת תלוש: בינתיים רק בהדגמה
-const LOAN_ON = /[?&]loan=1\b/.test(location.search); // בדיקת זכאות להלוואה: בינתיים רק בהדגמה
+const LOAN_ON = true; // בדיקת זכאות להלוואה: פתוח לכל הלקוחות
 const valid = v => isTab(v) || isSave(v) || (SLIP_ON && v==='payslip') || (LOAN_ON && v==='loan');
 let depth=0;
 function go(v){ if(v===S.view) return; depth++; try{ location.hash=v; }catch(_){ show(v); } }
@@ -1131,7 +1131,7 @@ function loanView(){
   return head+`<section class="card"><h2 class="dk-h" style="font-size:22px;margin:0 0 6px">כמה שאלות קצרות</h2>
       <p class="muted" style="margin:0 0 22px">זו בדיקה ראשונית בלבד. אחרי השליחה נציג יחזור אליך.</p>
       <form id="loan-form" novalidate>${qs}
-        <p class="lq-err" id="loan-err" role="alert" hidden>נשארו שאלות בלי תשובה.</p>
+        <p class="lq-err" id="loan-err" role="alert" hidden></p>
         <button class="dk-btn" type="submit" style="width:100%">${icon('mail',20,2.2)} לשליחה לבדיקה</button>
       </form></section>`;
 }
@@ -1149,9 +1149,18 @@ document.addEventListener('submit',e=>{
     const v = x.n ? f.elements[x.k].value.trim() : ((f.querySelector('input[name="'+x.k+'"]:checked')||{}).value||'');
     if(!v) ok=false; ans[x.k]=v;
   });
-  document.getElementById('loan-err').hidden = ok;
-  if(!ok) return;
-  S.loanAns=ans; S.loanDone=true; render(); window.scrollTo({top:0});   // הדגמה: עוד לא נשלח מייל
+  const errEl=document.getElementById('loan-err'); const say=m=>{ errEl.textContent=m; errEl.hidden=!m; };
+  if(!ok){ say('נשארו שאלות בלי תשובה.'); return; }
+  say('');
+  const done=()=>{ S.loanDone=true; render(); window.scrollTo({top:0}); };
+  const ss=S.session||{};
+  if(ss.demo || !ss.id){ done(); return; }           // מצב הדגמה: לא נשלח מייל
+  const btn=f.querySelector('button[type=submit]'); btn.disabled=true;
+  api({type:'loan', id:ss.id, sess:ss.tok||'', ans}).then(r=>{
+    if(r.ok){ done(); return; }
+    btn.disabled=false;
+    say(r.err==='auth' ? 'כדי לשלוח צריך להתחבר מחדש: לחצו "יציאה" והיכנסו שוב עם קוד.' : r.err==='limit' ? 'כבר קיבלנו ממך בקשה היום. נציג יחזור אליך בקרוב.' : 'לא הצלחנו לשלוח כרגע. אפשר לנסות שוב בעוד כמה דקות.');
+  }).catch(()=>{ btn.disabled=false; say('לא הצלחנו לשלוח כרגע. בדקו את החיבור לאינטרנט ונסו שוב.'); });
 });
 
 /* ---------- בדיקת תלוש שכר (הדגמה) ---------- */
@@ -1312,11 +1321,11 @@ document.addEventListener('submit',e=>{
     e.preventDefault();
     const v=document.getElementById('lg-otp').value.trim();
     if(v.length<6){ A.err='הקוד צריך להכיל 6 ספרות.'; render(); return; }
-    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString(), client:S.client||null}; store.set('bitax_session',S.session);
+    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString(), client:S.client||null, tok:S.sess||null}; store.set('bitax_session',S.session);
     A.err=''; A.step='id'; S.view='home'; S.rolled=false;
     try{ history.replaceState(null,'','#home'); }catch(_){}
     render(); window.scrollTo({top:0}); if(!S.mkt) consentModal(); };
-    if(A.server){ waitOn(); api({type:'mverify', id:A.id, code:v}).then(r=>{ if(r.ok){ S.client=r.client; applyClient(r.client); enter(); waitOff(2400); } else { waitOff(); A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ waitOff(); A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
+    if(A.server){ waitOn(); api({type:'mverify', id:A.id, code:v}).then(r=>{ if(r.ok){ S.client=r.client; S.sess=r.sess||null; applyClient(r.client); enter(); waitOff(2400); } else { waitOff(); A.err='הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.'; render(); } }).catch(()=>{ waitOff(); A.err='לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.'; render(); }); return; }
     if(v!==A.code){ A.err='הקוד שגוי. אפשר לנסות שוב או לבקש קוד חדש.'; render(); return; }
     waitOn(); enter(); waitOff(2400); return;
   }
