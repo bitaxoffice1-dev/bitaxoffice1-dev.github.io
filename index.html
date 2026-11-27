@@ -1185,12 +1185,29 @@ function slipView(){
   if(st==='wait') return head+`<section class="card" style="text-align:center;padding:36px 20px">
       <div class="slip-spin"></div>
       <h2 class="dk-h" style="font-size:20px">${SLIP_DEMO?'בודקים את התלוש שלך':'שולחים את התלוש…'}</h2>
-      <p class="muted" style="margin:0">${SLIP_DEMO?'קוראים את הנתונים ומשווים לחוק ולשיעורים העדכניים...':'זה לוקח כמה שניות. לא לסגור את הדף.'}</p></section>`;
+      <p class="muted" style="margin:0">${SLIP_DEMO?'קוראים את הנתונים ומשווים לחוק ולשיעורים העדכניים...':'זה יכול לקחת עד חצי דקה. לא לסגור את הדף.'}</p></section>`;
   if(st==='sent') return head+`<section class="card" style="text-align:center;padding:34px 20px">
       <div class="slip-ic" style="margin:0 auto 14px;width:64px;height:64px;border-radius:50%;background:#EEF8F1;color:#1E6B3C">${icon('check',28,2.6)}</div>
       <h2 class="dk-h" style="font-size:22px">התלוש אצלנו, תודה</h2>
       <p class="muted" style="margin:0 0 6px">הצוות שלנו יבדוק אותו ויחזור אליך עם התוצאות.</p>
       <button class="soft-link" data-act="slip-again" style="background:none;border:0;cursor:pointer">לשליחת תלוש נוסף</button></section>`;
+  const R = (!SLIP_DEMO && S.slipRes) || null;   // תשובה אמיתית מהשרת (ניסוי), אחרת נתוני ההדגמה
+  const nis = n => n ? Number(n).toLocaleString('en-US')+' ₪' : '—';
+  const rows = a => (a||[]).map(x=>[escH(x[0]),escH(x[1])]);
+  if(R){
+    return head+`<section class="card">
+      <span class="label">${R.month?'תלוש '+escH(R.month):'התלוש שלך'}</span>
+      <h2 class="dk-h" style="font-size:22px;margin:4px 0 0">ככה זה נראה בקצרה</h2>
+      <div class="slip-sum"><span><small>ברוטו</small><b class="num" dir="ltr">${nis(R.gross)}</b></span><span style="display:inline-flex;transform:scaleX(-1)">${icon('arrow',20)}</span><span><small>נטו</small><b class="num" dir="ltr" style="color:#1E6B3C">${nis(R.net)}</b></span></div>
+      ${R.deduct?`<p class="muted" style="margin:10px 0 0;font-size:14px">${escH(R.deduct)}</p>`:''}
+    </section>
+    ${R.ok&&R.ok.length?`<section class="card"><span class="label">מה תקין</span><ul class="slip-list ok">${rows(R.ok).map(x=>`<li><span class="dot">${icon('check',14,2.8)}</span><span><b style="font-weight:600">${x[0]}</b><small>${x[1]}</small></span></li>`).join('')}</ul></section>`:''}
+    <section class="card">${R.warn&&R.warn.length?`<span class="label">מה כדאי לבדוק</span><ul class="slip-list warn">${rows(R.warn).map(x=>`<li><span class="dot">!</span><span><b style="font-weight:600">${x[0]}</b><small>${x[1]}</small></span></li>`).join('')}</ul>`:`<span class="label">מה כדאי לבדוק</span><p class="muted" style="margin:8px 0 0">לא מצאנו בתלוש משהו שבולט לבדיקה.</p>`}
+      <a class="dk-btn" style="margin-top:18px" href="${waText('היי, קיבלתי באזור האישי בדיקה של תלוש השכר שלי ואשמח לעבור עליה איתכם')}" target="_blank" rel="noopener">${icon('chat',20,2.2)} נבדוק את זה איתך בוואטסאפ</a>
+    </section>
+    <p class="muted" style="font-size:12px;text-align:center;margin:4px 12px 0">הבדיקה אוטומטית ונותנת תמונה ראשונית בלבד, וייתכנו בה טעויות. לבדיקה מלאה דברו איתנו.</p>
+    <div style="text-align:center"><button class="soft-link" data-act="slip-again" style="background:none;border:0;cursor:pointer">לבדיקת תלוש נוסף</button></div>`;
+  }
   const ok=[['ביטוח לאומי ומס בריאות','מחושבים נכון'],['קרן השתלמות','המעסיק מפקיד בשבילך 825 ₪ בחודש, פי שלושה ממה שיורד לך'],['חופשה ומחלה','נצברים כמו שצריך'],['מס הכנסה','החודש לא שילמת בכלל, בזכות הטבת המס של היישוב שלך']];
   const warn=[['פנסיה','אין בתלוש הפקדה לפנסיה. כלומר אין חיסכון לפרישה ואין ביטוח אם חלילה לא תוכל לעבוד'],['מס הכנסה מתחילת השנה','ירדו לך כ־2,082 ₪. ייתכן שמגיע לך את זה בחזרה'],['דמי הבראה','מהשנה השנייה בעבודה מגיעים לך, והם לא מופיעים בתלוש']];
   const li=(a,ic)=>a.map(x=>`<li><span class="dot">${ic}</span><span><b style="font-weight:600">${x[0]}</b><small>${x[1]}</small></span></li>`).join('');
@@ -1222,7 +1239,7 @@ function slipPrep(file){
     img.onerror=()=>{ URL.revokeObjectURL(url); rej('type'); }; img.src=url;
   });
 }
-const SLIP_ERR={big:'הקובץ גדול מדי. אפשר להעלות PDF עד 5MB, או לצלם את התלוש.', type:'אפשר להעלות תמונה או קובץ PDF בלבד.', read:'לא הצלחנו לקרוא את הקובץ. אפשר לנסות שוב או לצלם את התלוש.', auth:'כדי לשלוח צריך להתחבר מחדש: לחצו "יציאה" והיכנסו שוב עם קוד.', limit:'כבר קיבלנו ממך כמה תלושים היום. נציג יחזור אליך בקרוב.', file:'הקובץ לא נקלט. אפשר להעלות תמונה או PDF.', net:'לא הצלחנו לשלוח כרגע. אפשר לנסות שוב בעוד כמה דקות.'};
+const SLIP_ERR={big:'הקובץ גדול מדי. אפשר להעלות PDF עד 5MB, או לצלם את התלוש.', type:'אפשר להעלות תמונה או קובץ PDF בלבד.', read:'לא הצלחנו לקרוא את הקובץ. אפשר לנסות שוב או לצלם את התלוש.', auth:'כדי לשלוח צריך להתחבר מחדש: לחצו "יציאה" והיכנסו שוב עם קוד.', limit:'כבר קיבלנו ממך כמה תלושים היום. נציג יחזור אליך בקרוב.', file:'הקובץ לא נקלט. אפשר להעלות תמונה או PDF.', notslip:'זה לא נראה כמו תלוש שכר, או שהצילום לא ברור. אפשר לנסות שוב עם צילום ברור של התלוש.', net:'לא הצלחנו לשלוח כרגע. אפשר לנסות שוב בעוד כמה דקות.'};
 document.addEventListener('change',e=>{
   if(e.target.id!=='slip-file' || !e.target.files[0]) return;
   const go=(st,err)=>{ S.slip=st; S.slipErr=err||''; render(); window.scrollTo({top:0}); };
@@ -1231,7 +1248,7 @@ document.addEventListener('change',e=>{
   go('wait');
   slipPrep(file).then(f=>{
     if(ss.demo || !ss.id){ setTimeout(()=>go('sent'), 1200); return; }      // מצב הדגמה: לא נשלח
-    return api({type:'slip', id:ss.id, sess:ss.tok||'', mime:f.mime, data:f.data}).then(r=> r.ok ? go('sent') : go('up', SLIP_ERR[r.err]||SLIP_ERR.net));
+    return api({type:'slip', id:ss.id, sess:ss.tok||'', mime:f.mime, data:f.data}).then(r=>{ if(!r.ok) return go('up', SLIP_ERR[r.err]||SLIP_ERR.net); S.slipRes = (r.res && r.res.isSlip) ? r.res : null; go(S.slipRes?'res':'sent'); });
   }).catch(err=>go('up', SLIP_ERR[err]||SLIP_ERR.net));
 });
 document.addEventListener('click',e=>{ if(e.target.closest('[data-act="slip-again"]')){ S.slip='up'; render(); window.scrollTo({top:0}); } });
