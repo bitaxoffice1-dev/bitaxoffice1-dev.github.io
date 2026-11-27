@@ -574,6 +574,8 @@ const LOGIN_ERR = {
   limit:'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.',
   sms:'כניסה ב-SMS תיפתח בקרוב. בינתיים אפשר לבחור אימייל.',
   noemail:'אין לנו אימייל שמור עבורך. כתבו לנו בוואטסאפ ונעזור.',
+  nophone:'אין לנו מספר נייד שמור עבורך. אפשר לבחור אימייל, או לכתוב לנו בוואטסאפ.',
+  smsfail:'לא הצלחנו לשלוח SMS כרגע. אפשר לנסות שוב או לבחור אימייל.',
   blocked:'לא ניתן להיכנס לאזור האישי כרגע. לפרטים פנו אלינו בוואטסאפ.',
   busy:'יש עומס כרגע. נסו שוב בעוד כמה דקות.', input:'הפרטים לא מלאים.'
 };
@@ -1411,7 +1413,7 @@ document.addEventListener('change',e=>{ if(e.target.name==='lg-how'){ const idEl
 document.addEventListener('input',e=>{ if(e.target.id==='lg-otp'||e.target.id==='lg-id') e.target.value=e.target.value.replace(/\D/g,''); });
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act="lg-back"]')){ S.auth.step='id'; S.auth.err=''; render(); return; }
-  if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'login',id:S.auth.id,how:S.auth.how==='mail'?'email':'sms',to:S.auth.to}).then(()=>toast('שלחנו קוד חדש למייל')).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
+  if(e.target.closest('[data-act="lg-resend"]')){ S.auth.err=''; if(S.auth.server){ api({type:'login',id:S.auth.id,how:S.auth.how==='mail'?'email':'sms',to:S.auth.to}).then(r=>toast(r&&r.ok ? (S.auth.how==='sms'?'שלחנו קוד חדש ב-SMS':'שלחנו קוד חדש למייל') : (LOGIN_ERR[r&&r.err]||'לא הצלחנו לשלוח. נסו שוב'))).catch(()=>toast('לא הצלחנו לשלוח. נסו שוב')); } else { newCode(); render(); toast('שלחנו קוד חדש'); } return; }
   if(e.target.closest('[data-act="open-plan"]')){ openPlan(); return; }
   if(e.target.closest('[data-act="logout"]')){ logoutNow(false); return; }
 });
