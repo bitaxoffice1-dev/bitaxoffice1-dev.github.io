@@ -1040,6 +1040,21 @@ function nextStops(){
       <button ${isSoon('pension')?'class="soon" disabled aria-disabled="true"':'data-go="pension"'}><span class="r-ic">${icon('growth',22)}</span><span><b>סדר בתיק הפנסיוני</b><small>נבדוק דמי ניהול, מסלולי השקעה וכספים שנשכחו</small></span>${isSoon('pension')?'<small class="soon-pill">בקרוב</small>':icon('chev',18)}</button>
     </div></section>`;
 }
+/* דף הבית המקוצר: מהכניסה השנייה אחרי שינוי סטטוס, בסטטוסים שלא דורשים פעולה מהלקוח */
+const QUIET_STAGES=['review','sent','calc','norefund','done'];
+function quietHome(){ const ss=S.session||{}; const seen = ss.demo ? /[?&]seen=1\b/.test(location.search) : !!ss.seen; return seen && QUIET_STAGES.indexOf(S.stage)>=0 && !CLIENT.pay; }
+function homeOffers(){
+  const b=(go,ic,t,d,soon)=>`<button ${soon?'class="soon" disabled aria-disabled="true"':`data-go="${go}"`}><span class="r-ic">${icon(ic,22)}</span><span><b>${t}</b><small>${d}</small></span>${soon?'<small class="soon-pill">בקרוב</small>':icon('chev',18)}</button>`;
+  return `<section class="card"><span class="label">עוד שירותים בשבילך</span>
+    <h2 class="dk-h" style="font-size:20px;margin:6px 0 4px">בוא נעשה סדר גם בשאר הכסף שלך</h2>
+    <p class="muted" style="margin:0 0 12px">כמה צעדים קצרים שיכולים לחסוך לך הרבה כסף.</p>
+    <div class="ns-list">
+      ${LOAN_ON?b('loan','coins','בדיקת זכאות להלוואה','כמה שאלות קצרות, ונחזור אליך עם תשובה'):''}
+      ${SLIP_ON?b('payslip','upload','בדיקת תלוש שכר','מעלים תלוש ובודקים מה תקין ומה כדאי לבדוק'):''}
+      ${b('insurance','shield','סדר בתיק הביטוחי','נבדוק שאין לך כפל ביטוחים ושאתה לא משלם יותר מדי',isSoon('insurance'))}
+      ${b('pension','growth','סדר בתיק הפנסיוני','נבדוק דמי ניהול, מסלולי השקעה וכספים שנשכחו',isSoon('pension'))}
+    </div></section>`;
+}
 function docsView(){
   let hello = home().split('</section>')[0]+'</section>';
   if(S.stage==='done' && CLIENT.refund) hello = hello.replace('</h1>', `</h1><div class="hello-total">עד היום החזרנו לך <b dir="ltr">${Math.round(CLIENT.refund).toLocaleString('he-IL')} ₪</b></div>`);
@@ -1101,6 +1116,9 @@ function docsView(){
     <p class="muted" style="margin:0 0 14px">כדי שנוכל להתקדם בתהליך, צריך להשלים את אמצעי התשלום. כתבו לנו ונסדר את זה יחד.</p>
     <a class="dk-btn" href="https://wa.me/message/BSJJNWU7KOG6B1" target="_blank" rel="noopener">${icon('chat',20,2.2)} לשירות לקוחות בוואטסאפ</a>
   </section>` : '';
+  if(quietHome()) return hello+homeOffers()+`
+  <div style="text-align:center;margin:2px 0 6px"><button class="soft-link" data-go="journey" style="background:none;border:0;cursor:pointer">לפרטים על החזר המס שלך – בתהליך</button></div>
+  <div class="ask">יש שאלה? <a class="wa" href="${waAsk()}" target="_blank" rel="noopener">${icon('chat',18)} לוואטסאפ מהיר</a></div>`;
   return hello+`<section class="card">${main}</section>${pay}
   ${SLIP_DEMO?slipCard():''}
   ${(S.stage==='norefund'||S.stage==='done')?nextStops()+`` :`<section class="card"><span class="label">איפה זה עומד</span>${stageSteps()}</section>`}
@@ -1371,7 +1389,8 @@ document.addEventListener('submit',e=>{
     e.preventDefault();
     const v=document.getElementById('lg-otp').value.trim();
     if(v.length<6){ A.err='הקוד צריך להכיל 6 ספרות.'; render(); return; }
-    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString(), client:S.client||null, tok:S.sess||null}; store.set('bitax_session',S.session);
+    const enter = () => { S.session={id:A.id, how:A.how, to:A.to, at:new Date().toISOString(), client:S.client||null, tok:S.sess||null}; { const st=(S.client&&S.client.stage)||''; const k=String(A.id).slice(-3)+':'+st; const seen=store.get('bitax_seen'); S.session.seen = !!(seen && seen===k); store.set('bitax_seen',k); }
+    store.set('bitax_session',S.session);
     A.err=''; A.step='id'; S.view='home'; S.rolled=false;
     try{ history.replaceState(null,'','#home'); }catch(_){}
     render(); window.scrollTo({top:0}); if(!S.mkt) consentModal(); };
